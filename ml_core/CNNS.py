@@ -36,13 +36,13 @@ class CNNSigmoid(object):
         self.metrics_value = None
 
 
-    def build_inputs():
-        image_feed = tf.placeholder(tf.string, shape=[])
-        annotation_feed = tf.placeholder(tf.int64, shape=[None])
-        images = tf.expand_dims(self.process_image(image_feed), 0)
-        input_seqs = tf.expand_dims(input_feed, 0)
-        self.images = images
-        self.input_seqs = input_seqs
+    def build_inputs(self):
+        image_feed = tf.placeholder(tf.string, shape=[], name="image_feed")
+        annotation_feed = tf.placeholder(tf.float32, shape=[None], name="annotation_feed")
+        image = tf.expand_dims(self.process_image(image_feed), 0)
+        annotation = tf.expand_dims(input_feed, 0)
+        self.images = image
+        self.annotations = annotation
 
 
     def build_inception(self):

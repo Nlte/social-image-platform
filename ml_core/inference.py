@@ -24,8 +24,9 @@ model.restore(sess)
 def inference(filename):
     with open(filename, 'rb') as f:
         encoded_image = f.read()
-    image_data = sess.run(processed_image, {image_feed: encoded_image})
-    preds = sess.run(model.prediction, {data: image_data, target: dummy_annot})
+    dummy_annot = np.zeros(len(model.vocabulary.vocab))
+    preds = sess.run(model.prediction,
+                    {"image_feed:0": encoded_image, "annotation_feed:0": dummy_annot})
     idx = [i for i, x in enumerate(preds[0]) if x == 1]
     words = [config.vocabulary.id_to_word(x) for x in idx]
     return words
