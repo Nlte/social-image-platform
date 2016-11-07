@@ -18,8 +18,8 @@ model = CNNSigmoid("inference", config)
 model.build()
 
 sess = tf.Session()
-
-model.restore(sess)
+sess.run(tf.initialize_all_variables())
+#model.restore(sess)
 
 def inference(filename):
     with open(filename, 'rb') as f:
@@ -30,3 +30,5 @@ def inference(filename):
     idx = [i for i, x in enumerate(preds[0]) if x == 1]
     words = [config.vocabulary.id_to_word(x) for x in idx]
     return words
+
+print(inference('landscapetree.jpg'))
