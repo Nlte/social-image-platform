@@ -60,7 +60,7 @@ class CNNSigmoid(object):
         with tf.name_scope('sigmoid_layer'):
             W = tf.Variable(
                 tf.random_normal([bottleneck_dim, output_dim],
-                stddev=0.35),
+                stddev=0.01),
                 name='sigmoid_weights'
                 )
             b = tf.Variable(tf.zeros([output_dim]), name='sigmoid_biases')
