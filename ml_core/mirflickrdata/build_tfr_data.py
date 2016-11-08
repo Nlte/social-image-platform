@@ -7,10 +7,12 @@ import tensorflow as tf
 from collections import Counter
 from collections import namedtuple
 from datetime import datetime
+from nltk.corpus import words
 import json
 import os
 import random
 import sys
+import re
 
 OUTPUT_DIR = 'output'
 ABS_IMAGE_DIR = os.path.join(os.getcwd(),'images')
@@ -106,14 +108,17 @@ def _create_vocab(annotations):
 
 
 def _create_tags(tags):
-    print("Creating tag space.")
+    print("Creating tag vocabulary.")
     counter = Counter(tags)
     print("Total words:", len(counter))
-
-    word_counts = [x for x in counter.items() if x[1] >= 4]
+    all_words = set(words.words())
+    clean_tags = [x for x in counter.items() if x[0] in all_words]
+    clean_tags = [x for x in clean_tags if not re.search(r'\d', x[0])]
+    word_counts = [x for x in counter.items() if x[1] >= 200]
     word_counts.sort(key=lambda x: x[1], reverse=True)
-    print("Words in vocabulary:", len(word_counts))
-
+    print(word_counts)
+    print("Words in tag vocabulary:", len(word_counts))
+    raise SystemExit
     output_file = OUTPUT_DIR + '/tag_counts.txt'
     with tf.gfile.FastGFile(output_file, "w") as f:
       f.write("\n".join(["%s %d" % (w, c) for w, c in word_counts]))
@@ -199,6 +204,8 @@ def main(_):
     alltags = [x for image in dataset for x in image.tags]
     vocabulary = _create_vocab(annotations)
     tags = _create_tags(alltags)
+    raise SystemExit
+
 
     _process_dataset('train', train_dataset, vocabulary, tags, 2056)
     _process_dataset('test', test_dataset, vocabulary, tags, 1028)
