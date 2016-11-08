@@ -29,10 +29,10 @@ def main(_):
     config = ModelConfig()
 
     train_images, train_annotations = inputs.input_pipeline(FLAGS.train_file_pattern,
-                                    num_classes=config.num_classes, batch_size=32)
+                                    num_classes=config.num_classes, batch_size=2)
 
     val_images, val_annotations = inputs.input_pipeline(FLAGS.val_file_pattern,
-                                    num_classes=config.num_classes, batch_size=8)
+                                    num_classes=config.num_classes, batch_size=1)
 
     data = tf.placeholder(tf.float32, [None, 299, 299, 3])
     target = tf.placeholder(tf.float32, [None, config.num_classes])
@@ -58,9 +58,8 @@ def main(_):
     print("%s Start training." % datetime.now())
     for n in xrange(FLAGS.num_steps):
 
-        if n%10 == 0:
+        if n%100 == 0:
             images, annotations = sess.run([val_images, val_annotations])
-            #sess.run(model.metrics_op, {data: images, target: annotations})
             pred, true = sess.run([model.prediction, model.annotations], {data: images, target: annotations})
             precision, recall, accuracy, f1_score, summary = sess.run(
                 [model.precision, model.recall, model.accuracy, model.f1_score, merged],
@@ -73,6 +72,9 @@ def main(_):
         else:
 
             images, annotations = sess.run([train_images, train_annotations])
+            #res = sess.run(model.loss, {data:images, target: annotations})
+            #print(res)
+            #raise SystemExit
             _, loss, acc, summary = sess.run([model.optimize, model.loss, model.accuracy, merged],
                                         {data:images, target: annotations})
             train_writer.add_summary(summary, n)

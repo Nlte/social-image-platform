@@ -74,12 +74,12 @@ class CNNSigmoid(object):
             sigmoid_tensor = tf.nn.sigmoid(logits, name='sigmoid_tensor')
             # label is true if sigmoid activation > 0.5
             prediction = tf.round(sigmoid_tensor, name='prediction_tensor')
-            cross_entropy = tf.reduce_mean(
-                tf.nn.sigmoid_cross_entropy_with_logits(logits, self.annotations)
-            )
-            tf.scalar_summary('cross_entropy', cross_entropy)
+            cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits, self.annotations)
+            cross_entropy_sum = tf.reduce_sum(cross_entropy, 1)
+            cross_entropy_mean = tf.reduce_mean(cross_entropy_sum)
+            #tf.scalar_summary('cross_entropy', cross_entropy)
             train_step = tf.train.GradientDescentOptimizer(self.config.learning_rate).minimize(cross_entropy)
-        self.loss = cross_entropy
+        self.loss = cross_entropy_mean
         self.prediction = prediction
         self.optimize = train_step
 
