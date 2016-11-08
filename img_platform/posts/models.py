@@ -2,12 +2,16 @@ from __future__ import unicode_literals
 
 from uuid import uuid4
 from django.db import models
+from django.dispatch import receiver
 from authentication.models import Account
-from inference import inference
+from posts.tasks import PredictionServer
+
+pred_server = PredictionServer()
 
 def scramble_image_filename(instance, filename):
     extension = filename.split('.')[-1]
     return '{}.{}'.format(uuid4(), extension)
+
 
 class Post(models.Model):
     author = models.ForeignKey(Account)
@@ -18,11 +22,20 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    #auto_caption = inference(url(image))
-
     #def save(self, *args, **kwargs):
-    #    self.auto_caption = inference(self.image.file.name)
+    #    self.auto_caption = tasks.inference(self.image.file.name)
     #    super(Post, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return '{} - {}'.format(self.author, self.user_caption)
+
+
+@receiver(models.signals.post_save, sender=Post)
+def make_prediction(sender, instance, created, **kwargs):
+    # without this check the save() below causes infinite post_save signals
+    if created:
+        #instance.some_field = complex_calculation()
+        instance.auto_caption = pred_server.inference(instance.image.file.name)
+        #instance.auto_caption = 'auto generated caption'
+        print(instance.image.file.name)
+        instance.save()
