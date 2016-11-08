@@ -101,6 +101,11 @@ class CNNSigmoid(object):
             f1_score = tf.scalar_mul(2, tf.div(tf.mul(precision, recall), precision + recall))
             accuracy = tf.div(tp + tn, tp + tn + fp + fn)
 
+            tf.scalar_summary('precision', precision)
+            tf.scalar_summary('recall', recall)
+            tf.scalar_summary('accuracy', accuracy)
+            tf.scalar_summary('F1-measure', f1_score)
+
         self.precision = precision
         self.recall = recall
         self.accuracy = accuracy
