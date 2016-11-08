@@ -34,6 +34,10 @@ class CNNSigmoid(object):
         # evaluation
         self.metrics_op = None
         self.metrics_value = None
+        self.precision = None
+        self.recall = None
+        self.f1_score = None
+        self.accuracy = None
 
 
     def build_inputs(self):
@@ -74,7 +78,7 @@ class CNNSigmoid(object):
                 tf.nn.sigmoid_cross_entropy_with_logits(logits, self.annotations)
             )
             tf.scalar_summary('cross_entropy', cross_entropy)
-            train_step = tf.train.AdamOptimizer(self.config.learning_rate).minimize(cross_entropy)
+            train_step = tf.train.GradientDescentOptimizer(self.config.learning_rate).minimize(cross_entropy)
         self.loss = cross_entropy
         self.prediction = prediction
         self.optimize = train_step
@@ -82,17 +86,25 @@ class CNNSigmoid(object):
 
     def build_evaluation(self):
         with tf.name_scope('metrics'):
-            recall, recall_op = tf.contrib.metrics.streaming_recall(
-                                self.prediction, self.annotations, name='recall')
-            accuracy, accuracy_op = tf.contrib.metrics.streaming_accuracy(
-                                self.prediction, self.annotations, name='accuracy')
-            precision, precision_op = tf.contrib.metrics.streaming_precision(
-                                self.prediction, self.annotations, name='precision')
-            tf.scalar_summary('recall', recall)
-            tf.scalar_summary('accuracy', accuracy)
-            tf.scalar_summary('precision', precision)
-        self.metrics_op = [recall_op, accuracy_op, precision_op]
-        self.metrics_value = [recall, accuracy, precision]
+            y_pred = tf.cast(self.prediction, tf.bool)
+            not_y_pred = tf.logical_not(y_pred)
+            y_true = tf.cast(self.annotations, tf.bool)
+            not_y_true = tf.logical_not(y_true)
+
+            tp = tf.reduce_mean(tf.cast(tf.logical_and(y_true, y_pred), tf.float32))
+            tn = tf.reduce_mean(tf.cast(tf.logical_and(not_y_pred, y_true), tf.float32))
+            fp = tf.reduce_mean(tf.cast(tf.logical_and(not_y_pred, not_y_true), tf.float32))
+            fn = tf.reduce_mean(tf.cast(tf.logical_and(y_pred, not_y_true), tf.float32))
+
+            precision = tf.div(tp, tp + fp)
+            recall = tf.div(tp, tp + fn)
+            f1_score = tf.scalar_mul(2, tf.div(tf.mul(precision, recall), precision + recall))
+            accuracy = tf.div(tp + tn, tp + tn + fp + fn)
+
+        self.precision = precision
+        self.recall = recall
+        self.accuracy = accuracy
+        self.f1_score = f1_score
 
 
     def init_fn(self, sess):
