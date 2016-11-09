@@ -76,7 +76,7 @@ class CNNSigmoid(object):
             cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits, self.annotations)
             cross_entropy_sum = tf.reduce_sum(cross_entropy, 1)
             cross_entropy_mean = tf.reduce_mean(cross_entropy_sum)
-            #tf.scalar_summary('cross_entropy', cross_entropy)
+            tf.scalar_summary('loss', cross_entropy_mean)
             train_step = tf.train.GradientDescentOptimizer(self.config.learning_rate).minimize(cross_entropy_mean)
         self.loss = cross_entropy_mean
         self.prediction = prediction

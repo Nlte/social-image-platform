@@ -31,4 +31,4 @@ def inference(filename):
     words = [config.vocabulary.id_to_word(x) for x in idx]
     return ' '.join(words)
 
-#print(inference('landscapetree.jpg'))
+print(inference('landscapetree.jpg'))
