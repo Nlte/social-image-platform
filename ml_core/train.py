@@ -32,7 +32,7 @@ def main(_):
                                     num_classes=config.num_classes, batch_size=16)
 
     val_images, val_annotations = inputs.input_pipeline(FLAGS.val_file_pattern,
-                                    num_classes=config.num_classes, batch_size=1)
+                                    num_classes=config.num_classes, batch_size=16)
 
     data = tf.placeholder(tf.float32, [None, 299, 299, 3])
     target = tf.placeholder(tf.float32, [None, config.num_classes])
@@ -76,9 +76,9 @@ def main(_):
                 model.precision, model.recall, model.f1_score, merged],
                 {data:images, target: annotations})
 
-                train_writer.add_summary(summary, n)
-                print("%s - Loss : %f Acc: %f Prec %f Rec %f F1score: %f" %
-                    (datetime.now(), loss, accuracy, precision, recall, f1_score))
+            train_writer.add_summary(summary, n)
+            print("%s - Loss : %f Acc: %f" %
+                (datetime.now(), loss, accuracy))
 
 
     save_path = saver.save(sess, os.path.join(FLAGS.log_dir, 'model.ckpt'))
