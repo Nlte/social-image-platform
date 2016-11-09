@@ -32,8 +32,7 @@ class CNNSigmoid(object):
         self.prediction = None
         self.optimize = None
         # evaluation
-        self.metrics_op = None
-        self.metrics_value = None
+        self.accuracy = None
         self.precision = None
         self.recall = None
         self.f1_score = None
@@ -78,7 +77,7 @@ class CNNSigmoid(object):
             cross_entropy_sum = tf.reduce_sum(cross_entropy, 1)
             cross_entropy_mean = tf.reduce_mean(cross_entropy_sum)
             #tf.scalar_summary('cross_entropy', cross_entropy)
-            train_step = tf.train.GradientDescentOptimizer(self.config.learning_rate).minimize(cross_entropy)
+            train_step = tf.train.GradientDescentOptimizer(self.config.learning_rate).minimize(cross_entropy_mean)
         self.loss = cross_entropy_mean
         self.prediction = prediction
         self.optimize = train_step
@@ -86,31 +85,29 @@ class CNNSigmoid(object):
 
     def build_evaluation(self):
         with tf.name_scope('metrics'):
-            y_pred = tf.cast(self.prediction, tf.bool)
-            not_y_pred = tf.logical_not(y_pred)
-            y_true = tf.cast(self.annotations, tf.bool)
-            not_y_true = tf.logical_not(y_true)
+            y = tf.cast(self.prediction, tf.bool)
+            z = tf.cast(self.annotations, tf.bool)
 
-            tp = tf.reduce_mean(tf.cast(tf.logical_and(y_true, y_pred), tf.float32))
-            tn = tf.reduce_mean(tf.cast(tf.logical_and(not_y_pred, y_true), tf.float32))
-            fp = tf.reduce_mean(tf.cast(tf.logical_and(not_y_pred, not_y_true), tf.float32))
-            fn = tf.reduce_mean(tf.cast(tf.logical_and(y_pred, not_y_true), tf.float32))
+            card_y = tf.reduce_sum(tf.cast(self.prediction, tf.float32), 1)
+            card_z = tf.reduce_sum(tf.cast(self.annotations, tf.float32), 1)
 
-            precision = tf.div(tp, tp + fp)
-            recall = tf.div(tp, tp + fn)
+            intersection = tf.reduce_sum(tf.to_float(tf.logical_and(y, z)), 1)
+            union = tf.reduce_sum(tf.to_float(tf.logical_or(y, z)), 1)
+
+            accuracy = tf.reduce_mean(tf.div(intersection, union))
+            precision = tf.reduce_mean(tf.div(intersection, card_z))
+            recall = tf.reduce_mean(tf.div(intersection, card_y))
             f1_score = tf.scalar_mul(2, tf.div(tf.mul(precision, recall), precision + recall))
-            accuracy = tf.div(tp + tn, tp + tn + fp + fn)
 
             tf.scalar_summary('precision', precision)
             tf.scalar_summary('recall', recall)
             tf.scalar_summary('accuracy', accuracy)
-            tf.scalar_summary('F1-measure', f1_score)
+            tf.scalar_summary('F1-score', f1_score)
 
         self.precision = precision
         self.recall = recall
         self.accuracy = accuracy
         self.f1_score = f1_score
-
 
     def init_fn(self, sess):
         saver = tf.train.Saver(self.inception_variables)

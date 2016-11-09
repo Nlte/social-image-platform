@@ -11,7 +11,7 @@ FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_string('log_dir', 'models/model', """logging directory""")
 
-tf.app.flags.DEFINE_integer('num_steps', 50, """Number of batches to run.""")
+tf.app.flags.DEFINE_integer('num_steps', 1000, """Number of batches to run.""")
 
 tf.app.flags.DEFINE_string('train_file_pattern', 'train-???-008.tfr',
                             """file pattern of training tfrecords.""")
@@ -29,7 +29,7 @@ def main(_):
     config = ModelConfig()
 
     train_images, train_annotations = inputs.input_pipeline(FLAGS.train_file_pattern,
-                                    num_classes=config.num_classes, batch_size=2)
+                                    num_classes=config.num_classes, batch_size=16)
 
     val_images, val_annotations = inputs.input_pipeline(FLAGS.val_file_pattern,
                                     num_classes=config.num_classes, batch_size=1)
@@ -58,31 +58,28 @@ def main(_):
     print("%s Start training." % datetime.now())
     for n in xrange(FLAGS.num_steps):
 
-        if n%100 == 0:
+        if n%50 == 0:
             images, annotations = sess.run([val_images, val_annotations])
-            pred, true = sess.run([model.prediction, model.annotations], {data: images, target: annotations})
+
             precision, recall, accuracy, f1_score, summary = sess.run(
                 [model.precision, model.recall, model.accuracy, model.f1_score, merged],
                 {data: images, target: annotations})
-
             test_writer.add_summary(summary, n)
-            print("%s - Precision : %f Recall: %f Accuracy: %f F1-score: %f" %
+            print("%s - Precision : %f Recall: %f Accuracy: %f F1score: %f" %
                     (datetime.now(), precision, recall, accuracy, f1_score))
 
         else:
 
             images, annotations = sess.run([train_images, train_annotations])
-            #res = sess.run(model.loss, {data:images, target: annotations})
-            #print(res)
-            #raise SystemExit
-            _, loss, acc, summary = sess.run([model.optimize, model.loss, model.accuracy, merged],
-                                        {data:images, target: annotations})
-            train_writer.add_summary(summary, n)
-            print("%s - Loss : %f Accuracy: %f" % (datetime.now(), loss, acc))
+            _, loss, accuracy, precision, recall, f1_score, summary = sess.run(
+                [model.optimize, model.loss, model.accuracy,
+                model.precision, model.recall, model.f1_score, merged],
+                {data:images, target: annotations})
 
+                train_writer.add_summary(summary, n)
+                print("%s - Loss : %f Acc: %f Prec %f Rec %f F1score: %f" %
+                    (datetime.now(), loss, accuracy, precision, recall, f1_score))
 
-            #summary = sess.run(merged, {data: images, target: annotations})
-            #test_writer.add_summary(summary, n)
 
     save_path = saver.save(sess, os.path.join(FLAGS.log_dir, 'model.ckpt'))
     print("Model saved in file: %s" % save_path)
