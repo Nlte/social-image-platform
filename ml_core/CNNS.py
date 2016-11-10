@@ -85,16 +85,17 @@ class CNNSigmoid(object):
 
     def build_evaluation(self):
         with tf.name_scope('metrics'):
-            y = tf.cast(self.prediction, tf.bool)
-            z = tf.cast(self.annotations, tf.bool)
-            y_clip = tf.clip_by_value(tf.cast(self.prediction, tf.float32), 1e-10, 1e+10)
-            z_clip = tf.clip_by_value(tf.cast(self.annotations, tf.float32), 1e-10, 1e+10)
+            z = tf.cast(self.prediction, tf.bool)
+            y = tf.cast(self.annotations, tf.bool)
+            z_clip = tf.clip_by_value(tf.cast(self.prediction, tf.float32), 1e-10, 1e+10)
+            y_clip = tf.clip_by_value(tf.cast(self.annotations, tf.float32), 1e-10, 1e+10)
 
-            card_y = tf.reduce_sum(y_clip, 1)
             card_z = tf.reduce_sum(z_clip, 1)
+            card_y = tf.reduce_sum(y_clip, 1)
 
-            intersection = tf.clip_by_value(tf.reduce_sum(tf.to_float(tf.logical_and(y, z)), 1), 1e-10, 1e+10)
-            union = tf.clip_by_value(tf.reduce_sum(tf.to_float(tf.logical_or(y, z)), 1), 1e-10, 1e+10)
+
+            intersection = tf.clip_by_value(tf.reduce_sum(tf.to_float(tf.logical_and(z, y)), 1), 1e-10, 1e+10)
+            union = tf.clip_by_value(tf.reduce_sum(tf.to_float(tf.logical_or(z, y)), 1), 1e-10, 1e+10)
 
             accuracy = tf.reduce_mean(tf.div(intersection, union))
             precision = tf.reduce_mean(tf.div(intersection, card_z))
