@@ -93,8 +93,8 @@ class CNNSigmoid(object):
             card_y = tf.reduce_sum(y_clip, 1)
             card_z = tf.reduce_sum(z_clip, 1)
 
-            intersection = tf.reduce_sum(tf.to_float(tf.logical_and(y, z)), 1)
-            union = tf.reduce_sum(tf.to_float(tf.logical_or(y, z)), 1)
+            intersection = tf.clip_by_value(tf.reduce_sum(tf.to_float(tf.logical_and(y, z)), 1), 1e-10, 1e+10)
+            union = tf.clip_by_value(tf.reduce_sum(tf.to_float(tf.logical_or(y, z)), 1), 1e-10, 1e+10)
 
             accuracy = tf.reduce_mean(tf.div(intersection, union))
             precision = tf.reduce_mean(tf.div(intersection, card_z))

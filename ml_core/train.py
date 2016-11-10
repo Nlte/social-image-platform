@@ -11,7 +11,7 @@ FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_string('log_dir', 'models/model', """logging directory""")
 
-tf.app.flags.DEFINE_integer('num_steps', 1000, """Number of batches to run.""")
+tf.app.flags.DEFINE_integer('num_steps', 2000, """Number of batches to run.""")
 
 tf.app.flags.DEFINE_string('train_file_pattern', 'train-???-008.tfr',
                             """file pattern of training tfrecords.""")
