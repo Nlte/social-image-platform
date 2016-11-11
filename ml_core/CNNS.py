@@ -50,7 +50,7 @@ class CNNSigmoid(object):
 
     def build_inception(self):
         cnn.maybe_download_and_extract(self.config.inception_dir)
-        inception_output = cnn.inception_v3(self.images, trainable=False)
+        inception_output = cnn.inception_v3(self.images, trainable=self.config.train_inception)
         self.inception_variables = tf.get_collection(
             tf.GraphKeys.VARIABLES, scope="InceptionV3")
         self.bottleneck_tensor = inception_output
