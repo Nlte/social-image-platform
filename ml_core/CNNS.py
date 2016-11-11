@@ -29,14 +29,13 @@ class CNNSigmoid(object):
         # sigmoid
         self.loss = None
         self.logits = None
+        self.activations = None
         self.prediction = None
         self.optimize = None
         # evaluation
-        self.accuracy = None
-        self.precision = None
-        self.recall = None
-        self.f1_score = None
-        self.accuracy = None
+        self.auc_op_rack = None
+        self.auc_rack = None
+        self.mean_auc = None
 
 
     def build_inputs(self):
@@ -60,68 +59,63 @@ class CNNSigmoid(object):
     def build_sigmoid(self):
         output_dim = self.config.num_classes
         bottleneck_dim = self.config.bottleneck_dim
-        with tf.name_scope('sigmoid_layer'):
+        with tf.variable_scope('sigmoid_layer') as scope:
             W = tf.Variable(
                 tf.random_normal([bottleneck_dim, output_dim],
                 stddev=0.01),
-                name='sigmoid_weights'
+                name=scope.name
                 )
-            b = tf.Variable(tf.zeros([output_dim]), name='sigmoid_biases')
+            b = tf.Variable(tf.zeros([output_dim]), name=scope.name)
             # logits
             logits = tf.matmul(self.bottleneck_tensor, W) + b
             # compute the activations
-            sigmoid_tensor = tf.nn.sigmoid(logits, name='sigmoid_tensor')
+            sigmoid_tensor = tf.nn.sigmoid(logits, name=scope.name)
             # label is true if sigmoid activation > 0.5
-            prediction = tf.round(sigmoid_tensor, name='prediction_tensor')
+            prediction = tf.round(sigmoid_tensor, name=scope.name)
             cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits, self.annotations)
             cross_entropy_sum = tf.reduce_sum(cross_entropy, 1)
             cross_entropy_mean = tf.reduce_mean(cross_entropy_sum)
             tf.scalar_summary('loss', cross_entropy_mean)
-            train_step = tf.train.GradientDescentOptimizer(self.config.learning_rate).minimize(cross_entropy_mean)
+            train_step = tf.train.AdamOptimizer(self.config.learning_rate).minimize(cross_entropy_mean)
         self.loss = cross_entropy_mean
+        self.activations = sigmoid_tensor
         self.prediction = prediction
         self.optimize = train_step
 
 
-    def build_evaluation(self):
-        with tf.name_scope('metrics'):
-            z = tf.cast(self.prediction, tf.bool)
-            y = tf.cast(self.annotations, tf.bool)
-            z_clip = tf.clip_by_value(tf.cast(self.prediction, tf.float32), 1e-10, 1e+10)
-            y_clip = tf.clip_by_value(tf.cast(self.annotations, tf.float32), 1e-10, 1e+10)
-
-            card_z = tf.reduce_sum(z_clip, 1)
-            card_y = tf.reduce_sum(y_clip, 1)
-
-
-            intersection = tf.clip_by_value(tf.reduce_sum(tf.to_float(tf.logical_and(z, y)), 1), 1e-10, 1e+10)
-            union = tf.clip_by_value(tf.reduce_sum(tf.to_float(tf.logical_or(z, y)), 1), 1e-10, 1e+10)
-
-            accuracy = tf.reduce_mean(tf.div(intersection, union))
-            precision = tf.reduce_mean(tf.div(intersection, card_z))
-            recall = tf.reduce_mean(tf.div(intersection, card_y))
-            f1_score = tf.scalar_mul(2, tf.div(tf.mul(precision, recall), precision + recall))
-
-            tf.scalar_summary('precision', precision)
-            tf.scalar_summary('recall', recall)
-            tf.scalar_summary('accuracy', accuracy)
-            tf.scalar_summary('F1-score', f1_score)
-
-        self.precision = precision
-        self.recall = recall
-        self.accuracy = accuracy
-        self.f1_score = f1_score
-
-    def init_fn(self, sess):
-        saver = tf.train.Saver(self.inception_variables)
-        tf.logging.info("Restoring Inception variables from checkpoint file %s",
-            self.config.inception_checkpoint)
-        saver.restore(sess, self.config.inception_checkpoint)
+    def build_auc(self):
+        activation_rack = tf.unpack(tf.cast(self.activations, tf.float32), axis=1)
+        label_rack = tf.unpack(tf.cast(self.annotations, tf.float32), axis=1)
+        auc_rack = []
+        auc_op_rack = []
+        with tf.name_scope('metrics') as scope:
+            i=0
+            for activation, label in zip(activation_rack, label_rack):
+                auc, auc_op = tf.contrib.metrics.streaming_auc(activation, label, curve='PR')
+                auc_rack.append(auc)
+                auc_op_rack.append(auc_op)
+                tf.scalar_summary('auc/'+self.vocabulary.id_to_word(i), auc)
+                i+=1
+        mean_auc = tf.reduce_mean(auc_rack)
+        tf.scalar_summary('mean_auc', mean_auc)
+        self.auc_rack = auc_rack
+        self.mean_auc = mean_auc
+        self.auc_op_rack = auc_op_rack
 
 
-    def setup_global_step(self):
-        global_step = tf.Variable(0, name='global_step', trainable=False)
-        self.global_step = global_step
+    def build_summaries(self):
+        train_summary_ops = []
+        train_summary_ops.append(tf.scalar_summary('loss', self.loss))
+        train_summary_ops.append(tf.scalar_summary('mean_auc', self.mean_auc))
+
+        test_summary_ops = []
+        i=0
+        for auc in self.auc_rack:
+            op = tf.scalar_summary('auc/'+self.vocabulary.id_to_word(i), auc)
+            test_summary_ops.append(op)
+            i+=1
+        self.train_summary = train_summary_ops
+        self.test_summary = test_summary_ops
 
 
     def build(self):
@@ -132,9 +126,15 @@ class CNNSigmoid(object):
 
         self.build_inception()
         self.build_sigmoid()
-        self.build_evaluation()
-        self.setup_global_step()
+        self.build_auc()
         tf.logging.info("Model sucessfully built.")
+
+
+    def init_fn(self, sess):
+        saver = tf.train.Saver(self.inception_variables)
+        tf.logging.info("Restoring Inception variables from checkpoint file %s",
+            self.config.inception_checkpoint)
+        saver.restore(sess, self.config.inception_checkpoint)
 
 
     def restore(self, sess):

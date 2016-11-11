@@ -29,10 +29,10 @@ def main(_):
     config = ModelConfig()
 
     train_images, train_annotations = inputs.input_pipeline(FLAGS.train_file_pattern,
-                                    num_classes=config.num_classes, batch_size=16)
+                                    num_classes=config.num_classes, batch_size=32)
 
     val_images, val_annotations = inputs.input_pipeline(FLAGS.val_file_pattern,
-                                    num_classes=config.num_classes, batch_size=16)
+                                    num_classes=config.num_classes, batch_size=32)
 
     data = tf.placeholder(tf.float32, [None, 299, 299, 3])
     target = tf.placeholder(tf.float32, [None, config.num_classes])
@@ -60,25 +60,19 @@ def main(_):
 
         if n%50 == 0:
             images, annotations = sess.run([val_images, val_annotations])
-
-            precision, recall, accuracy, f1_score, summary = sess.run(
-                [model.precision, model.recall, model.accuracy, model.f1_score, merged],
-                {data: images, target: annotations})
-            test_writer.add_summary(summary, n)
-            print("%s - Precision : %f Recall: %f Accuracy: %f F1score: %f" %
-                    (datetime.now(), precision, recall, accuracy, f1_score))
+            fetches = {'auc_ops': model.auc_op_rack, 'summary': merged}
+            v = sess.run(fetches, {data: images, target: annotations})
+            auc_values = sess.run(model.auc_rack)
+            test_writer.add_summary(v['summary'], n)
 
         else:
 
             images, annotations = sess.run([train_images, train_annotations])
-            _, loss, accuracy, precision, recall, f1_score, summary = sess.run(
-                [model.optimize, model.loss, model.accuracy,
-                model.precision, model.recall, model.f1_score, merged],
-                {data:images, target: annotations})
-
-            train_writer.add_summary(summary, n)
-            print("%s - Loss : %f Acc: %f" %
-                (datetime.now(), loss, accuracy))
+            fetches = {'opt':model.optimize, 'loss':model.loss, 'mean_auc':model.mean_auc, 'auc_ops':model.auc_op_rack, 'summary': merged}
+            v = sess.run(fetches, {data: images, target: annotations})
+            train_writer.add_summary(v['summary'], i)
+            print("%s - Loss : %f mean AUC: %f" %
+                (datetime.now(), v['loss'], v['mean_auc']))
 
 
     save_path = saver.save(sess, os.path.join(FLAGS.log_dir, 'model.ckpt'))

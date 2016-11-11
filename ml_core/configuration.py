@@ -26,7 +26,7 @@ class ModelConfig(object):
         # model
         self.train_inception = True
 
-        self.learning_rate = 0.05
+        self.learning_rate = 0.5
 
         self.bottleneck_dim = 2048
 
