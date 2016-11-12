@@ -6,14 +6,15 @@ import os
 
 import tensorflow as tf
 
-from vocabulary import Vocabulary
-from image_processing import process_image
+from configuration import ModelConfig
 from tensorflow.python.framework import ops
 from tensorflow.python.framework import dtypes
 
-TFR_DIR = 'mirflickrdata/output'
-BOTTLENECK_DIR = 'mirflickrdata/bottlenecksv3'
-VOCAB_FILE = 'mirflickrdata/output/word_counts.txt'
+config = ModelConfig()
+
+TFR_DIR = config.tfr_dir
+BOTTLENECK_DIR = config.bottleneck_dir
+VOCAB_FILE = config.vocab_file
 
 tf.logging.set_verbosity(tf.logging.INFO)
 
@@ -29,19 +30,18 @@ def parse_sequence_example(serialized, image_feature, annotation_feature):
         sequence_features={
             annotation_feature: tf.FixedLenSequenceFeature([], dtype=tf.int64),
         })
-    encoded_image = context[image_feature]
+    image_name = context[image_feature]
     annotation = sequence[annotation_feature]
 
-    return encoded_image, annotation
+    return image_name, annotation
 
 
 def read_and_decode(filename_queue):
     reader = tf.TFRecordReader()
     _, record_string = reader.read(filename_queue)
-    encoded_image, annotation = parse_sequence_example(record_string, 'image/data', 'image/annotation_bin')
-    image = process_image(encoded_image, 299, 299)
+    image_name, annotation = parse_sequence_example(record_string, 'image/filename', 'image/annotation_bin')
     annotation_float = tf.cast(annotation, tf.float32)
-    return image, annotation_float
+    return image_name, annotation_float
 
 
 def input_pipeline(file_pattern, num_classes, batch_size):
@@ -54,20 +54,19 @@ def input_pipeline(file_pattern, num_classes, batch_size):
     filename_queue = tf.train.string_input_producer(filenames, shuffle=True)
     image, annotation = read_and_decode(filename_queue)
     annotation.set_shape([num_classes])
-
-    image_batch, annot_batch = tf.train.batch([image, annotation], batch_size=batch_size)
-
+    min_after_dequeue = 10000
+    capacity = min_after_dequeue + 3 * batch_size
+    image_batch, annot_batch = tf.train.shuffle_batch([image, annotation], batch_size=batch_size,
+        capacity=capacity, min_after_dequeue=min_after_dequeue)
     return image_batch, annot_batch
 
 
-
-def get_bottleneck_batch(images, bottleneck_dir):
+def get_bottlenecks(images):
     bottlenecks = []
     for image in images:
-        bottleneck_path = os.path.join(bottleneck_dir, image+'.txt')
+        bottleneck_path = os.path.join(BOTTLENECK_DIR, image+'.txt')
         with open(bottleneck_path, 'r') as bottleneck_file:
             bottleneck_string = bottleneck_file.read()
         bottleneck_values = [float(x) for x in bottleneck_string.split(',')]
         bottlenecks.append(bottleneck_values)
-
     return bottlenecks

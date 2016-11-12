@@ -22,11 +22,15 @@ class ModelConfig(object):
 
         self.vocab_file = path.join(dirname,"mirflickrdata/output/word_counts.txt")
 
+        self.tfr_dir = path.join(dirname,"mirflickrdata/output")
+
+        self.bottleneck_dir = path.join(dirname,"mirflickrdata/bottlenecks")
+
 
         # model
-        self.train_inception = True
+        self.train_inception = False
 
-        self.learning_rate = 0.5
+        self.learning_rate = 0.005
 
         self.bottleneck_dim = 2048
 

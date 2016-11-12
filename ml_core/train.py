@@ -11,13 +11,22 @@ FLAGS = tf.app.flags.FLAGS
 
 tf.app.flags.DEFINE_string('log_dir', 'models/model', """logging directory""")
 
-tf.app.flags.DEFINE_integer('num_steps', 2000, """Number of batches to run.""")
+tf.app.flags.DEFINE_integer('num_epoch', 10, """Number of epoch to run.""")
+
+tf.app.flags.DEFINE_integer('batch_size', 32, """Batch size.""")
 
 tf.app.flags.DEFINE_string('train_file_pattern', 'train-???-008.tfr',
                             """file pattern of training tfrecords.""")
 
 tf.app.flags.DEFINE_string('val_file_pattern', 'val-???-001.tfr',
                             """file pattern of training tfrecords.""")
+
+tf.app.flags.DEFINE_string('bottleneck_dir', 'mirflickrdata/bottlenecks',
+                            """bottleneck cache directory.""")
+
+tf.app.flags.DEFINE_string('image_dir', 'mirflickrdata/images',
+                            """image directory.""")
+
 
 
 def main(_):
@@ -26,18 +35,19 @@ def main(_):
         tf.logging.info("Creating output directory: %s" % FLAGS.log_dir)
         tf.gfile.MakeDirs(FLAGS.log_dir)
 
+
     config = ModelConfig()
 
     train_images, train_annotations = inputs.input_pipeline(FLAGS.train_file_pattern,
-                                    num_classes=config.num_classes, batch_size=32)
+                                    num_classes=config.num_classes, batch_size=FLAGS.batch_size)
 
     val_images, val_annotations = inputs.input_pipeline(FLAGS.val_file_pattern,
-                                    num_classes=config.num_classes, batch_size=32)
+                                    num_classes=config.num_classes, batch_size=FLAGS.batch_size)
 
-    data = tf.placeholder(tf.float32, [None, 299, 299, 3])
-    target = tf.placeholder(tf.float32, [None, config.num_classes])
+    #data = tf.placeholder(tf.float32, [None, 299, 299, 3])
+    #target = tf.placeholder(tf.float32, [None, config.num_classes])
 
-    model = CNNSigmoid("train", config, data, target)
+    model = CNNSigmoid("train", config)
     model.build()
 
     merged = tf.merge_all_summaries()
@@ -47,7 +57,6 @@ def main(_):
 
     sess.run(tf.initialize_all_variables())
     sess.run(tf.initialize_local_variables())
-    model.init_fn(sess)
 
     train_writer = tf.train.SummaryWriter(FLAGS.log_dir + '/train', sess.graph)
     test_writer = tf.train.SummaryWriter(FLAGS.log_dir + '/test')
@@ -56,24 +65,32 @@ def main(_):
     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
 
     print("%s Start training." % datetime.now())
-    for n in xrange(FLAGS.num_steps):
 
-        if n%50 == 0:
+    num_batch_per_epoch = int((9 * 2056)/FLAGS.batch_size)  # (nb shards * nb examples per shard) / batch size
+    num_steps = FLAGS.num_epoch * num_batch_per_epoch
+
+    for n in xrange(num_steps):
+
+        if n%500 == 0:
             images, annotations = sess.run([val_images, val_annotations])
-            fetches = {'auc_ops': model.auc_op_rack, 'summary': merged}
-            v = sess.run(fetches, {data: images, target: annotations})
-            auc_values = sess.run(model.auc_rack)
+            bottlenecks = inputs.get_bottlenecks(images)
+            fetches = {'auc_ops': model.auc_op_rack, 'mean_auc': model.mean_auc, 'summary': merged}
+            feed_dict = {'bottleneck_feed:0': bottlenecks, 'annotation_feed:0': annotations}
+            v = sess.run(fetches, feed_dict)
+            print("%s - Validation : Mean AUC %f" % (datetime.now(), v['mean_auc']))
             test_writer.add_summary(v['summary'], n)
 
-        else:
 
-            images, annotations = sess.run([train_images, train_annotations])
-            fetches = {'opt':model.optimize, 'loss':model.loss, 'mean_auc':model.mean_auc, 'auc_ops':model.auc_op_rack, 'summary': merged}
-            v = sess.run(fetches, {data: images, target: annotations})
-            train_writer.add_summary(v['summary'], i)
-            print("%s - Loss : %f mean AUC: %f" %
-                (datetime.now(), v['loss'], v['mean_auc']))
-
+        images, annotations = sess.run([train_images, train_annotations])
+        bottlenecks = inputs.get_bottlenecks(images)
+        fetches = {'opt':model.optimize, 'loss':model.loss, 'mean_auc':model.mean_auc,
+                    'auc_ops':model.auc_op_rack, 'summary': merged}
+        feed_dict = {'bottleneck_feed:0': bottlenecks, 'annotation_feed:0': annotations}
+        v = sess.run(fetches, feed_dict)
+        if n%100 == 0:
+            print("%s - Step %d - Loss : %f mean AUC: %f" %
+                (datetime.now(), n, v['loss'], v['mean_auc']))
+            train_writer.add_summary(v['summary'], n)
 
     save_path = saver.save(sess, os.path.join(FLAGS.log_dir, 'model.ckpt'))
     print("Model saved in file: %s" % save_path)
