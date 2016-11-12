@@ -91,6 +91,53 @@ class CNNSigmoid(object):
         self.optimize = train_step
 
 
+    def build_mlp(self):
+        output_dim = self.config.num_classes
+        bottleneck_dim = self.config.bottleneck_dim
+        hidden_units1 = 1400
+        hidden_units2 = 1000
+        # Hidden 1
+        with tf.name_scope('hidden1'):
+            W = tf.Variable(
+                tf.truncated_normal([bottleneck_dim, hidden1_units],
+                                    stddev=1.0 / math.sqrt(float(bottleneck_dim))),
+                                    name='weights')
+            b = tf.Variable(tf.zeros([hidden1_units]),
+                            name='biases')
+            hidden1 = tf.nn.relu(tf.matmul(self.bottleneck_tensor, W) + b)
+        # Hidden 2
+        with tf.name_scope('hidden2'):
+            W = tf.Variable(
+                tf.truncated_normal([hidden1_units, hidden2_units],
+                                    stddev=1.0 / math.sqrt(float(hidden1_units))),
+                name='weights')
+            b = tf.Variable(tf.zeros([hidden2_units]),
+                                 name='biases')
+            hidden2 = tf.nn.relu(tf.matmul(hidden1, W) + b)
+        # Sigmoid
+        with tf.name_scope('sigmoid'):
+            W = tf.Variable(
+                tf.truncated_normal([hidden2_units, output_dim],
+                                    stddev=1.0 / math.sqrt(float(hidden2_units))),
+                name='weights')
+            b = tf.Variable(tf.zeros([output_dim]),
+                                 name='biases')
+            logits = tf.matmul(hidden2, W) + b
+            sigmoid_tensor = tf.nn.sigmoid(logits, name=scope.name)
+
+        prediction = tf.round(sigmoid_tensor, name=scope.name) # label is true if sigmoid activation > 0.5
+        cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits, self.annotations)
+        cross_entropy_sum = tf.reduce_sum(cross_entropy, 1)
+        cross_entropy_mean = tf.reduce_mean(cross_entropy_sum)
+        tf.scalar_summary('loss', cross_entropy_mean)
+        train_step = tf.train.GradientDescentOptimizer(self.config.learning_rate).minimize(cross_entropy_mean)
+        self.loss = cross_entropy_mean
+        self.activations = sigmoid_tensor
+        self.prediction = prediction
+        self.optimize = train_step
+
+
+
     def build_auc(self):
         activation_rack = tf.unpack(tf.cast(self.activations, tf.float32), axis=1)
         label_rack = tf.unpack(tf.cast(self.annotations, tf.float32), axis=1)
@@ -122,7 +169,7 @@ class CNNSigmoid(object):
 
         elif self.mode == "train":
             self.build_inputs()
-            self.build_sigmoid()
+            self.build_mlp()
             self.build_auc()
 
         tf.logging.info("Model sucessfully built.")
