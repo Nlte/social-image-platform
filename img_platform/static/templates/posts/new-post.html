@@ -1,22 +1,21 @@
-<div class="row">
-  <div class="col-md-4 col-md-offset-4">
-    <h1>New Post</h1>
-
-    <div class="well">
-      <form role="form" ng-submit="vm.submit()">
-
-        <div class="form-group">
-          <label for="post__user_caption">Username</label>
-          <input type="text" class="form-control" id="post__user_caption" ng-model="user_caption" placeholder="insert your caption" />
-        </div>
-
-        <div class="form-group">
-          <input type="file" name="file" onchange="angular.element(this).scope().uploadFile(this.files)"/>
-
-        <div class="form-group">
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </div>
-      </form>
-    </div>
+<form role="form" ng-submit="vm.submit()">
+  <div class="form-group">
+    <label for="post__content">New Post</label>
+    <textarea class="form-control"
+              id="post__title"
+              rows="1"
+              placeholder="insert title."
+              ng-model="vm.title">
+    </textarea>
   </div>
-</div>
+
+  <div class="form-group">
+    <input type="file" class="form-control" name="file" onchange="angular.element(this).scope().uploadFile(this.files)" />
+  </div>
+
+  <div class="form-group">
+    <button type="submit" class="btn btn-primary">
+      Submit
+    </button>
+  </div>
+</form>

@@ -1,19 +1,18 @@
 <nav class="navbar navbar-default" role="navigation" ng-controller="NavbarController as vm">
   <div class="container-fluid">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#not-google-plus-nav">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#nav-bar">
         <span class="sr-only">Toggle Navigation</span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="/">Social Img Descr</a>
+      <a class="navbar-brand" href="/">Image Description Platform</a>
     </div> <!-- ./navbar-header -->
 
-    <div class="collapse navbar-collapse" id="not-google-plus-nav">
+    <div class="collapse navbar-collapse" id="nav">
       <ul class="nav navbar-nav pull-right">
         {% if user.is_authenticated %}
-        <li><a href="/newpost">New Post</a></li>
           <li><a href="/+{{ user.username }}">+{{ user.username }}</a></li>
           <li><a href="/+{{ user.username }}/settings">Settings</a></li>
           <li><a href="javascript:void(0)" ng-click="vm.logout()">Logout</a></li>

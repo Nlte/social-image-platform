@@ -1,7 +1,3 @@
-/**
-* Posts
-* @namespace platform.posts.services
-*/
 (function () {
   'use strict';
 
@@ -11,10 +7,7 @@
 
   Posts.$inject = ['$http'];
 
-  /**
-  * @namespace Posts
-  * @returns {Factory}
-  */
+
   function Posts($http) {
     var Posts = {
       all: all,
@@ -24,39 +17,30 @@
 
     return Posts;
 
-    ////////////////////
 
-    /**
-    * @name all
-    * @desc Get all Posts
-    * @returns {Promise}
-    * @memberOf platform.posts.services.Posts
-    */
     function all() {
       return $http.get('/api/v1/posts/');
     }
 
 
-    /**
-    * @name create
-    * @desc Create a new Post
-    * @param {string} user_caption The user_caption of the new Post
-    * @returns {Promise}
-    * @memberOf platform.posts.services.Posts
-    */
-    function create(user_caption) {
-      return $http.post('/api/v1/posts/', {
-        user_caption: user_caption
-      });
+    function create(fd) {
+      return $http.post('/api/v1/posts/', fd, {
+        withCredentials: true,
+        headers: {'Content-Type': undefined },
+        transformRequest: angular.identity
+      }).then(createSuccessFn, createErrorFn);
+
+      function createSuccessFn(data, status, headers, config) {
+        console.log('Post created with succcess.');
+        window.location = '/';
+      }
+
+      function createErrorFn(data, status, headers, config) {
+        console.error('Could not create post.');
+      }
     }
 
-    /**
-     * @name get
-     * @desc Get the Posts of a given user
-     * @param {string} username The username to get Posts for
-     * @returns {Promise}
-     * @memberOf platform.posts.services.Posts
-     */
+
     function get(username) {
       return $http.get('/api/v1/accounts/' + username + '/posts/');
     }

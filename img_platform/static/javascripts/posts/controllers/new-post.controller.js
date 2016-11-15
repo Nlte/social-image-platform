@@ -1,32 +1,38 @@
-//inject angular file upload directives and services.
-(function (){
+(function () {
   'use strict';
 
   angular
     .module('platform.posts.controllers')
     .controller('NewPostController', NewPostController);
 
-    NewPostController.$inject = ['$scope', '$http'];
-    function NewPostController ($scope, $http) {
-      console.log('in the controller');
-      $scope.uploadFile = function(files) {
-        console.log(files);
-        var fd = new FormData();
-        var user_caption = $scope.user_caption;
-        console.log(user_caption);
-        //Take the first selected file
-        fd.append("image", files[0]);
-        fd.append("user_caption", user_caption);
-        for (var pair of fd.entries()) {
-            console.log(pair[0]+ ', ' + pair[1]);
-        }
+  NewPostController.$inject = ['$rootScope', '$scope', 'Authentication', 'Snackbar', 'Posts'];
 
-        $http.post('/api/v1/posts/', fd, {
-          withCredentials: true,
-          headers: {'Content-Type': undefined },
-          transformRequest: angular.identity
-        });
 
-    };
+  function NewPostController($rootScope, $scope, Authentication, Snackbar, Posts) {
+    var vm = this;
+
+    vm.submit = submit;
+    var fd = new FormData();
+    $scope.uploadFile = function(files) {
+      fd.append("image", files[0]);
+      fd.append("title", vm.title);
+    }
+
+
+    function submit() {
+
+      $scope.closeThisDialog();
+
+      Posts.create(fd).then(createPostSuccessFn, createPostErrorFn);
+
+      function createPostSuccessFn(data, status, headers, config) {
+        Snackbar.show('Success! Post created.');
+      }
+
+      function createPostErrorFn(data, status, headers, config) {
+        $rootScope.$broadcast('post.created.error');
+        Snackbar.error(data.error);
+      }
+    }
   }
 })();

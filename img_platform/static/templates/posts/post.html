@@ -7,16 +7,17 @@
             +{{ post.author.username }}
           </a>
         </div>
+        <div class="post__title">
+          {{ post.title }}
+        </div>
 
         <div class="post__image">
           <img src="{{ post.image }}" height="200" width="200">
         </div>
 
-        <div class="post__usercaption">
-          User caption : {{ post.user_caption }}
-        </div>
-        <div class="post_autocaption">
-          Generated caption : {{ post.auto_caption }}
+
+        <div class="post__annotation">
+          {{ post.annotation }}
         </div>
       </div>
     </div>

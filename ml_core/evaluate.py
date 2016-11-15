@@ -21,7 +21,7 @@ tf.app.flags.DEFINE_string('bottleneck_dir', 'mirflickrdata/bottlenecks',
 tf.app.flags.DEFINE_string('image_dir', 'mirflickrdata/images',
                             """image directory.""")
 
-tf.app.flags.DEFINE_string('model_str', '1hidden-500-SGD005',
+tf.app.flags.DEFINE_string('model_str', '2hidden-1500-500',
                             """model name to store in csv.""")
 
 

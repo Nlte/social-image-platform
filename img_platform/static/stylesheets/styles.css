@@ -1,3 +1,8 @@
+.navbar-default {
+    background-color: #78909C;
+    border-color: #607D8B;
+}
+
 .no-posts-here {
   text-align: center;
 }
@@ -18,4 +23,8 @@
   position: fixed;
   bottom: 20px;
   right: 20px;
+}
+
+.btn-primary, .btn-primary:hover, .btn-primary:active, .btn-primary:visited {
+    background-color: #78909C !important;
 }

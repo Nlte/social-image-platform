@@ -103,6 +103,7 @@ class CNNSigmoid(object):
             keep_prob = self.keep_prob
 
             hidden1_units = self.config.hidden1_dim
+            hidden2_units = self.config.hidden2_dim
 
             # Hidden 1
             with tf.variable_scope('hidden1'):
@@ -115,25 +116,25 @@ class CNNSigmoid(object):
                 hidden1 = tf.nn.relu(tf.matmul(self.bottleneck_tensor, W) + b)
                 hidden1_drop = tf.nn.dropout(hidden1, keep_prob)
 
-            #with tf.variable_scope('hidden2'):
-            #    W = tf.Variable(
-            #        tf.truncated_normal([hidden1_units, hidden2_units],
-            #                            stddev=1.0 / math.sqrt(float(hidden1_units))),
-            #                            name='weights')
-            #    b = tf.Variable(tf.zeros([hidden2_units]),
-            #                    name='biases')
-            #    hidden2 = tf.nn.relu(tf.matmul(hidden1_drop, W) + b)
-            #    hidden2_drop = tf.nn.dropout(hidden2, keep_prob)
+            with tf.variable_scope('hidden2'):
+                W = tf.Variable(
+                    tf.truncated_normal([hidden1_units, hidden2_units],
+                                        stddev=1.0 / math.sqrt(float(hidden1_units))),
+                                        name='weights')
+                b = tf.Variable(tf.zeros([hidden2_units]),
+                                name='biases')
+                hidden2 = tf.nn.relu(tf.matmul(hidden1_drop, W) + b)
+                hidden2_drop = tf.nn.dropout(hidden2, keep_prob)
 
             # Linear
             with tf.name_scope('sigmoid'):
                 W = tf.Variable(
-                    tf.truncated_normal([hidden1_units, output_dim],
-                                        stddev=1.0 / math.sqrt(float(hidden1_units))),
+                    tf.truncated_normal([hidden2_units, output_dim],
+                                        stddev=1.0 / math.sqrt(float(hidden2_units))),
                     name='weights')
                 b = tf.Variable(tf.zeros([output_dim]),
                                      name='biases')
-                logits = tf.matmul(hidden1_drop, W) + b
+                logits = tf.matmul(hidden2_drop, W) + b
                 sigmoid_tensor = tf.nn.sigmoid(logits, name='sigmoid_activations')
 
             prediction = tf.round(sigmoid_tensor) # label is true if sigmoid activation > 0.5
@@ -141,7 +142,7 @@ class CNNSigmoid(object):
             cross_entropy_sum = tf.reduce_sum(cross_entropy, 1)
             cross_entropy_mean = tf.reduce_mean(cross_entropy_sum)
             tf.scalar_summary('loss', cross_entropy_mean)
-            train_step = tf.train.GradientDescentOptimizer(self.config.learning_rate).minimize(cross_entropy_mean)
+            train_step = tf.train.AdamOptimizer(self.config.learning_rate).minimize(cross_entropy_mean)
 
         self.fc_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope="fully_connected")
         self.loss = cross_entropy_mean
@@ -167,7 +168,6 @@ class CNNSigmoid(object):
                 auc, auc_op = tf.contrib.metrics.streaming_auc(activation, label, curve='PR')
                 auc_rack.append(auc)
                 auc_op_rack.append(auc_op)
-                tf.scalar_summary('auc/'+self.vocabulary.id_to_word(i), auc)
                 i+=1
             mean_auc = tf.reduce_mean(auc_rack)
             tf.scalar_summary('mean_auc', mean_auc)

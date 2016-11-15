@@ -33,11 +33,12 @@ class ModelConfig(object):
 
         self.train_inception = False
 
-        self.learning_rate = 0.05
+        self.learning_rate = 5e-4
 
         self.bottleneck_dim = 2048
 
-        self.hidden1_dim = 500
+        self.hidden1_dim = 1500
+        self.hidden2_dim = 1000
 
         if self.mode == "train":
             self.keep_prob = 0.5

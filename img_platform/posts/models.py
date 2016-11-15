@@ -4,9 +4,9 @@ from uuid import uuid4
 from django.db import models
 from django.dispatch import receiver
 from authentication.models import Account
-from posts.tasks import PredictionServer
+#from posts.tasks import PredictionServer
 
-pred_server = PredictionServer()
+#pred_server = PredictionServer()
 
 def scramble_image_filename(instance, filename):
     extension = filename.split('.')[-1]
@@ -15,8 +15,8 @@ def scramble_image_filename(instance, filename):
 
 class Post(models.Model):
     author = models.ForeignKey(Account)
-    user_caption = models.TextField(blank=True)
-    auto_caption = models.TextField(blank=True)
+    title = models.TextField(blank=True)
+    annotation = models.TextField(blank=True)
     image = models.ImageField(upload_to=scramble_image_filename, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -27,7 +27,7 @@ class Post(models.Model):
     #    super(Post, self).save(*args, **kwargs)
 
     def __unicode__(self):
-        return '{} - {}'.format(self.author, self.user_caption)
+        return '{} - {}'.format(self.author, self.title)
 
 
 @receiver(models.signals.post_save, sender=Post)
@@ -35,7 +35,7 @@ def make_prediction(sender, instance, created, **kwargs):
     # without this check the save() below causes infinite post_save signals
     if created:
         #instance.some_field = complex_calculation()
-        instance.auto_caption = pred_server.inference(instance.image.file.name)
+        #instance.annotation = pred_server.inference(instance.image.file.name)
         #instance.auto_caption = 'auto generated caption'
         print(instance.image.file.name)
         instance.save()

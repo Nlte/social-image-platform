@@ -1,7 +1,3 @@
-/**
-* LoginController
-* @namespace platform.authentication.controllers
-*/
 (function () {
   'use strict';
 
@@ -11,9 +7,7 @@
 
   LoginController.$inject = ['$location', '$scope', 'Authentication'];
 
-  /**
-  * @namespace LoginController
-  */
+
   function LoginController($location, $scope, Authentication) {
     var vm = this;
 
@@ -21,23 +15,12 @@
 
     activate();
 
-    /**
-    * @name activate
-    * @desc Actions to be performed when this controller is instantiated
-    * @memberOf platform.authentication.controllers.LoginController
-    */
     function activate() {
-      // If the user is authenticated, they should not be here.
       if (Authentication.isAuthenticated()) {
         $location.url('/');
       }
     }
 
-    /**
-    * @name login
-    * @desc Log the user in
-    * @memberOf platform.authentication.controllers.LoginController
-    */
     function login() {
       Authentication.login(vm.email, vm.password);
     }
