@@ -18,13 +18,14 @@ model = CNNSigmoid("inference", config)
 model.build()
 
 sess = tf.Session()
+model.restore_inception(sess)
 #sess.run(tf.initialize_all_variables())
-model.restore(sess)
+model.restore_fc(sess)
 
 def inference(filename):
     with open(filename, 'rb') as f:
         encoded_image = f.read()
-    dummy_annot = np.zeros(len(model.vocabulary.vocab))
+    dummy_annot = np.zeros((1,len(model.vocabulary.vocab)))
     preds = sess.run(model.prediction,
                     {"image_feed:0": encoded_image, "annotation_feed:0": dummy_annot})
     idx = [i for i, x in enumerate(preds[0]) if x == 1]

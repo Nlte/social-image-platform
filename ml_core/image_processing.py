@@ -67,6 +67,7 @@ def process_image(encoded_image,
                                    size=[resize_height, resize_width],
                                    method=tf.image.ResizeMethod.BILINEAR)
 
+
   # Central crop, assuming resize_height > height, resize_width > width.
   image = tf.image.resize_image_with_crop_or_pad(image, height, width)
 

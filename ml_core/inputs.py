@@ -10,7 +10,7 @@ from configuration import ModelConfig
 from tensorflow.python.framework import ops
 from tensorflow.python.framework import dtypes
 
-config = ModelConfig()
+config = ModelConfig("train")
 
 TFR_DIR = config.tfr_dir
 BOTTLENECK_DIR = config.bottleneck_dir

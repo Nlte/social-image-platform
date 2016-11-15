@@ -9,7 +9,7 @@ import os.path as path
 class ModelConfig(object):
     """Wrapper class for configuration."""
 
-    def __init__(self):
+    def __init__(self, mode):
 
         # directories and files
         dirname = path.dirname(__file__)
@@ -28,11 +28,21 @@ class ModelConfig(object):
 
 
         # model
+        self.mode = mode
+        assert self.mode in ["benchmark", "train", "test"]
+
         self.train_inception = False
 
-        self.learning_rate = 0.005
+        self.learning_rate = 0.05
 
         self.bottleneck_dim = 2048
+
+        self.hidden1_dim = 500
+
+        if self.mode == "train":
+            self.keep_prob = 0.5
+        elif self.mode in ["test","benchmark"]:
+            self.keep_prob = 1.0
 
         self.vocabulary = Vocabulary(self.vocab_file)
 
