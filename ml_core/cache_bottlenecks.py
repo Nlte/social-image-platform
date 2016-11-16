@@ -21,9 +21,9 @@ def cache_bottlenecks(bottleneck_dir, image_dir):
         tf.logging.info("Creating output directory: %s" % bottleneck_dir)
         tf.gfile.MakeDirs(bottleneck_dir)
 
-    config = ModelConfig()
+    config = ModelConfig("inference")
 
-    model = CNNSigmoid("inference", config)
+    model = CNNSigmoid(config)
     model.build()
 
     sess = tf.Session()
@@ -64,3 +64,5 @@ def cache_bottlenecks(bottleneck_dir, image_dir):
 
 if __name__ == '__main__':
     cache_bottlenecks(FLAGS.bottleneck_dir, FLAGS.image_dir)
+
+from fnmatch import fnmatch
