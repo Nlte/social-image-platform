@@ -34,7 +34,7 @@ To run the dataset processing script :
 cd ml_core/mirflickrdata/
 ```
 ```sh
-python build_tfr_data.py --image_dir=path/to/image/dir --annot_dir=path/to/annotation/dir --output_dir=mirflickrdata/output
+python build_tfr_data.py --image_dir=images/ --annot_file=annotation.json --output_dir=output/
 ```
 
 This script process the raw dataset into tensorflow records files : `train-???-008.tfr` , `test-???-004.tfr` , `val-???-001.tfr`
