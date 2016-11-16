@@ -11,9 +11,9 @@ import numpy as np
 print("\n Building tensorflow model.\n")
 
 
-config = ModelConfig()
+config = ModelConfig("inference")
 
-model = CNNSigmoid("inference", config)
+model = CNNSigmoid(config)
 
 model.build()
 
