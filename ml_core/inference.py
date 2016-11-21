@@ -4,32 +4,46 @@ import inputs
 from datetime import datetime
 from image_processing import process_image
 from vocabulary import Vocabulary
-from CNNS import CNNSigmoid
+from MLmodel import MLClassifier
 from configuration import ModelConfig
 import numpy as np
+import matplotlib.pyplot as plt
 
-print("\n Building tensorflow model.\n")
+FLAGS = tf.app.flags.FLAGS
 
+tf.app.flags.DEFINE_string('image', '',
+                            """Image to run inference on.""")
 
-config = ModelConfig()
+config = ModelConfig("inference")
 
-model = CNNSigmoid("inference", config)
+data = tf.placeholder(tf.string, [])
+target = tf.placeholder(tf.float32, [None, config.num_classes])
 
+model = MLClassifier(config, data, target)
 model.build()
 
 sess = tf.Session()
 model.restore_inception(sess)
-#sess.run(tf.initialize_all_variables())
 model.restore_fc(sess)
 
 def inference(filename):
     with open(filename, 'rb') as f:
         encoded_image = f.read()
     dummy_annot = np.zeros((1,len(model.vocabulary.vocab)))
-    preds = sess.run(model.prediction,
-                    {"image_feed:0": encoded_image, "annotation_feed:0": dummy_annot})
+    image, preds = sess.run([model.images, model.prediction],
+                            {data: encoded_image, target: dummy_annot})
     idx = [i for i, x in enumerate(preds[0]) if x == 1]
     words = [config.vocabulary.id_to_word(x) for x in idx]
+    print(words)
+
+    fig = plt.figure()
+    a=fig.add_subplot(1,1,1)
+    imgplot = plt.imshow(image[0])
+    a.set_title(', '.join(words))
+    plt.show()
+
     return ' '.join(words)
 
-print(inference('landscapetree.jpg'))
+
+if __name__ == '__main__':
+    inference(FLAGS.image)

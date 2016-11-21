@@ -30,18 +30,19 @@ def parse_sequence_example(serialized, image_feature, annotation_feature):
         sequence_features={
             annotation_feature: tf.FixedLenSequenceFeature([], dtype=tf.int64),
         })
-    image_name = context[image_feature]
+    image = context[image_feature]
     annotation = sequence[annotation_feature]
 
-    return image_name, annotation
+    return image, annotation
 
 
 def read_and_decode(filename_queue):
     reader = tf.TFRecordReader()
     _, record_string = reader.read(filename_queue)
-    image_name, annotation = parse_sequence_example(record_string, 'image/filename', 'image/annotation_bin')
+    image, annotation = parse_sequence_example(record_string, 'image/filename', 'image/annotation_bin')
     annotation_float = tf.cast(annotation, tf.float32)
-    return image_name, annotation_float
+
+    return image, annotation_float
 
 
 def input_pipeline(file_pattern, num_classes, batch_size):
@@ -54,10 +55,8 @@ def input_pipeline(file_pattern, num_classes, batch_size):
     filename_queue = tf.train.string_input_producer(filenames, shuffle=True)
     image, annotation = read_and_decode(filename_queue)
     annotation.set_shape([num_classes])
-    min_after_dequeue = 10000
-    capacity = min_after_dequeue + 3 * batch_size
-    image_batch, annot_batch = tf.train.shuffle_batch([image, annotation], batch_size=batch_size,
-        capacity=capacity, min_after_dequeue=min_after_dequeue)
+    image_batch, annot_batch = tf.train.batch([image, annotation], batch_size=batch_size)
+
     return image_batch, annot_batch
 
 
@@ -69,4 +68,5 @@ def get_bottlenecks(images):
             bottleneck_string = bottleneck_file.read()
         bottleneck_values = [float(x) for x in bottleneck_string.split(',')]
         bottlenecks.append(bottleneck_values)
+
     return bottlenecks

@@ -24,26 +24,26 @@ class ModelConfig(object):
 
         self.tfr_dir = path.join(dirname,"mirflickrdata/output")
 
-        self.bottleneck_dir = path.join(dirname,"mirflickrdata/bottlenecks")
+        self.bottleneck_dir = path.join(dirname,"mirflickrdata/bottlenecks-noncentered")
 
 
         # model
         self.mode = mode
-        assert self.mode in ["benchmark", "train", "test"]
+        assert self.mode in ["train", "inference"]
 
         self.train_inception = False
+
+        self.distort_image = False
 
         self.learning_rate = 5e-4
 
         self.bottleneck_dim = 2048
 
-        self.hidden1_dim = 1500
-        self.hidden2_dim = 1000
+        self.num_hidden = 1
 
-        if self.mode == "train":
-            self.keep_prob = 0.5
-        elif self.mode in ["test","benchmark"]:
-            self.keep_prob = 1.0
+        self.hidden_dim = 1500
+
+        self.keep_prob = 0.9
 
         self.vocabulary = Vocabulary(self.vocab_file)
 

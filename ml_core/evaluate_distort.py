@@ -10,10 +10,10 @@ from MLmodel import MLClassifier
 
 FLAGS = tf.app.flags.FLAGS
 
-tf.app.flags.DEFINE_string('test_file_pattern', 'test-???-004.tfr',
+tf.app.flags.DEFINE_string('test_file_pattern', 'val-???-001.tfr',
                             """file pattern of test tfrecords.""")
 
-tf.app.flags.DEFINE_integer('batch_size', 100, """Batch size.""")
+tf.app.flags.DEFINE_integer('batch_size', 1, """Batch size.""")
 
 tf.app.flags.DEFINE_string('bottleneck_dir', 'mirflickrdata/bottlenecks',
                             """bottleneck cache directory.""")
@@ -31,13 +31,13 @@ tf.app.flags.DEFINE_string('model_str', '',
 
 def main(_):
 
-    config = ModelConfig("train")
+    config = ModelConfig("inference")
     config.keep_prob = 1.0  # desactivate the dropout
 
     test_images, test_annotations = inputs.input_pipeline(FLAGS.test_file_pattern,
                                     num_classes=config.num_classes, batch_size=FLAGS.batch_size)
 
-    data = tf.placeholder(tf.float32, [None, config.bottleneck_dim])
+    data = tf.placeholder(tf.string, [])
     target = tf.placeholder(tf.float32, [None, config.num_classes])
 
     model = MLClassifier(config, data, target)
@@ -47,19 +47,23 @@ def main(_):
 
     sess.run(tf.initialize_local_variables())
     model.restore_fc(sess)
+    model.restore_inception(sess)
 
     coord = tf.train.Coordinator()
     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
 
     print("%s Running test..." % datetime.now())
 
-    num_steps = int((4 * 1028)/FLAGS.batch_size) # (nb shards * nb examples per shard)
+    num_steps = int((1028)/FLAGS.batch_size) # (1 shards * nb examples per shard)
 
     for n in xrange(num_steps):
-        images, annotations = sess.run([test_images, test_annotations])
-        bottlenecks = inputs.get_bottlenecks(images)
+        print(n)
+        image, annotation = sess.run([test_images, test_annotations])
+        with open(FLAGS.image_dir+'/'+image[0], 'r') as f:
+            image_data = f.read()
+
         fetches = {'auc_ops': model.auc_op}
-        feed_dict = {data: bottlenecks, target: annotations}
+        feed_dict = {data: image_data, target: annotation}
         v = sess.run(fetches, feed_dict)
 
     fetches = {'mean_auc': model.mean_auc, 'auc': model.auc}
@@ -71,15 +75,12 @@ def main(_):
     # store result in csv
     dataframe = {'model':FLAGS.model_str,
                 'mean AUC': v['mean_auc']}
-
     for i, k in enumerate(v['auc']):
         label = model.vocabulary.id_to_word(i)
         dataframe[label] = k
-
     if not os.path.isfile('results.csv'):
         df = pd.DataFrame(dataframe, columns=dataframe.keys(), index=[0])
         df.to_csv('results.csv', index=False)
-
     else:
         df = pd.read_csv('results.csv')
         len_df = len(df)

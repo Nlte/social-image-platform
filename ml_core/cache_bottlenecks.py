@@ -1,14 +1,15 @@
 import tensorflow as tf
 import os
+import sys
 import numpy as np
 from fnmatch import fnmatch
-from CNNS import CNNSigmoid
+from MLmodel import MLClassifier
 from configuration import ModelConfig
 
 
 FLAGS = tf.app.flags.FLAGS
 
-tf.app.flags.DEFINE_string('bottleneck_dir', 'mirflickrdata/bottlenecks',
+tf.app.flags.DEFINE_string('bottleneck_dir', 'mirflickrdata/bottlenecks-noncentered',
                             """bottleneck cache directory.""")
 
 tf.app.flags.DEFINE_string('image_dir', 'mirflickrdata/images',
@@ -21,9 +22,9 @@ def cache_bottlenecks(bottleneck_dir, image_dir):
         tf.logging.info("Creating output directory: %s" % bottleneck_dir)
         tf.gfile.MakeDirs(bottleneck_dir)
 
-    config = ModelConfig()
+    config = ModelConfig("inference")
 
-    model = CNNSigmoid("inference", config)
+    model = MLClassifier(config)
     model.build()
 
     sess = tf.Session()

@@ -192,7 +192,7 @@ def main(_):
         tf.gfile.MakeDirs(OUTPUT_DIR)
 
     dataset = _load_and_process_metadata(CAPTION_FILE)
-
+    print([x for x in dataset if x.filename=="im1.jpg"])
     n0 = int(0.8 * len(dataset))
     train_dataset = dataset[:n0]
     test_dataset = dataset[n0:]
@@ -204,7 +204,6 @@ def main(_):
     alltags = [x for image in dataset for x in image.tags]
     vocabulary = _create_vocab(annotations)
     tags = _create_tags(alltags)
-    raise SystemExit
 
 
     _process_dataset('train', train_dataset, vocabulary, tags, 2056)
