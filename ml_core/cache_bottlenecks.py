@@ -24,10 +24,14 @@ def cache_bottlenecks(bottleneck_dir, image_dir):
 
     config = ModelConfig("inference")
 
+<<<<<<< HEAD
     data = tf.placeholder(tf.string, [])
     target = tf.placeholder(tf.float32, [None, config.num_classes])
 
     model = MLClassifier(config, data, target)
+=======
+    model = MLClassifier(config)
+>>>>>>> origin/master
     model.build()
 
     sess = tf.Session()
