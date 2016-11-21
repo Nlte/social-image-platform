@@ -9,7 +9,7 @@ The neural network is also deployed on a photo sharing website where users can u
 ### Architecture
 The neural network is a multilabel classifier is composed of a deep convolution neural network and a multilayer perceptron.
 First the image is sent to the CNN which embeds the image into a fix-length vector. Then, the multilayer perceptron predicts the labels that describe the best the image.
-![](https://raw.githubusercontent.com/Nlte/social-image-platform/master/readmedocs/architecturemedium.jpg)
+![](https://raw.githubusercontent.com/Nlte/social-image-platform/master/docs/architecture.jpg)
 
 The model uses transfer learning with Inception-v3 as it shows state of the art performances on the ILSVR challenge.
 For more information you can check out this [tensorflow-tutorial](https://www.tensorflow.org/versions/r0.9/how_tos/image_retraining/index.html)
