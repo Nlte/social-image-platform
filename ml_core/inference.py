@@ -16,8 +16,12 @@ tf.app.flags.DEFINE_string('image', '',
 
 config = ModelConfig("inference")
 
+<<<<<<< HEAD
 data = tf.placeholder(tf.string, [])
 target = tf.placeholder(tf.float32, [None, config.num_classes])
+=======
+model = CNNSigmoid(config)
+>>>>>>> origin/master
 
 model = MLClassifier(config, data, target)
 model.build()

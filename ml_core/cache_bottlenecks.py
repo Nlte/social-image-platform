@@ -24,7 +24,11 @@ def cache_bottlenecks(bottleneck_dir, image_dir):
 
     config = ModelConfig("inference")
 
+<<<<<<< HEAD
     model = MLClassifier(config)
+=======
+    model = CNNSigmoid(config)
+>>>>>>> origin/master
     model.build()
 
     sess = tf.Session()
@@ -65,3 +69,5 @@ def cache_bottlenecks(bottleneck_dir, image_dir):
 
 if __name__ == '__main__':
     cache_bottlenecks(FLAGS.bottleneck_dir, FLAGS.image_dir)
+
+from fnmatch import fnmatch
