@@ -9,7 +9,7 @@ from configuration import ModelConfig
 
 FLAGS = tf.app.flags.FLAGS
 
-tf.app.flags.DEFINE_string('bottleneck_dir', 'mirflickrdata/bottlenecks-noncentered',
+tf.app.flags.DEFINE_string('bottleneck_dir', 'mirflickrdata/bottlenecks',
                             """bottleneck cache directory.""")
 
 tf.app.flags.DEFINE_string('image_dir', 'mirflickrdata/images',
@@ -24,11 +24,10 @@ def cache_bottlenecks(bottleneck_dir, image_dir):
 
     config = ModelConfig("inference")
 
-<<<<<<< HEAD
-    model = MLClassifier(config)
-=======
-    model = CNNSigmoid(config)
->>>>>>> origin/master
+    data = tf.placeholder(tf.string, [])
+    target = tf.placeholder(tf.float32, [None, config.num_classes])
+
+    model = MLClassifier(config, data, target)
     model.build()
 
     sess = tf.Session()
@@ -53,7 +52,7 @@ def cache_bottlenecks(bottleneck_dir, image_dir):
             with tf.gfile.GFile(image_path, "r") as f:
                 encoded_image = f.read()
             bottleneck_values = sess.run(model.bottleneck_tensor,
-                feed_dict={"image_feed:0": encoded_image})
+                feed_dict={data: encoded_image})
             bottleneck_values = np.squeeze(bottleneck_values)
             bottleneck_string = ','.join(str(x) for x in bottleneck_values)
             bottleneck_path = os.path.join(bottleneck_dir, image+'.txt')

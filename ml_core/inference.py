@@ -11,17 +11,13 @@ import matplotlib.pyplot as plt
 
 FLAGS = tf.app.flags.FLAGS
 
-tf.app.flags.DEFINE_string('image', '',
+tf.app.flags.DEFINE_string('image', '../docs/lake.jpg',
                             """Image to run inference on.""")
 
 config = ModelConfig("inference")
 
-<<<<<<< HEAD
 data = tf.placeholder(tf.string, [])
 target = tf.placeholder(tf.float32, [None, config.num_classes])
-=======
-model = CNNSigmoid(config)
->>>>>>> origin/master
 
 model = MLClassifier(config, data, target)
 model.build()

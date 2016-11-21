@@ -11,7 +11,7 @@ tf.logging.set_verbosity(tf.logging.INFO)
 
 def distort_image(image):
     """Apply random distortions to an image."""
-    
+
     # Randomly flip horizontally.
     with tf.name_scope("flip_horizontal"):
         image = tf.image.random_flip_left_right(image)
@@ -33,8 +33,9 @@ def process_image(encoded_image, resize_height=299, resize_width=299, distort=Fa
 
     # Decode image into a float32 Tensor of shape [?, ?, 3] with values in [0, 1].
     with tf.name_scope("decode"):
-        image = tf.image.decode_jpeg(encoded_image, channels=3)
-        else:
+        try:
+            image = tf.image.decode_jpeg(encoded_image, channels=3)
+        except:
             raise ValueError("Invalid image format: %s" % image_format)
         image = tf.image.convert_image_dtype(image, dtype=tf.float32)
 

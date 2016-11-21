@@ -24,7 +24,7 @@ class ModelConfig(object):
 
         self.tfr_dir = path.join(dirname,"mirflickrdata/output")
 
-        self.bottleneck_dir = path.join(dirname,"mirflickrdata/bottlenecks-noncentered")
+        self.bottleneck_dir = path.join(dirname,"mirflickrdata/bottlenecks")
 
 
         # model

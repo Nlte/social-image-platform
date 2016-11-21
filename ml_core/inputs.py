@@ -12,10 +12,6 @@ from tensorflow.python.framework import dtypes
 
 config = ModelConfig("train")
 
-TFR_DIR = config.tfr_dir
-BOTTLENECK_DIR = config.bottleneck_dir
-VOCAB_FILE = config.vocab_file
-
 tf.logging.set_verbosity(tf.logging.INFO)
 
 
@@ -47,7 +43,7 @@ def read_and_decode(filename_queue):
 
 def input_pipeline(file_pattern, num_classes, batch_size):
     filenames = []
-    filenames.extend(tf.gfile.Glob(TFR_DIR + '/' + file_pattern))
+    filenames.extend(tf.gfile.Glob(config.tfr_dir + '/' + file_pattern))
     if not filenames:
         tf.logging.fatal("No input files matching %s" % file_pattern)
     else:
@@ -63,7 +59,7 @@ def input_pipeline(file_pattern, num_classes, batch_size):
 def get_bottlenecks(images):
     bottlenecks = []
     for image in images:
-        bottleneck_path = os.path.join(BOTTLENECK_DIR, image+'.txt')
+        bottleneck_path = os.path.join(config.bottleneck_dir, image+'.txt')
         with open(bottleneck_path, 'r') as bottleneck_file:
             bottleneck_string = bottleneck_file.read()
         bottleneck_values = [float(x) for x in bottleneck_string.split(',')]

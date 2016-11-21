@@ -58,9 +58,6 @@ def build_annotation_json():
     with open('annotations.json', 'w') as f:
         json.dump(json_objects, f)
 
-def build_exif_json():
-    
-
 
 if __name__ == '__main__':
     build_annotation_json()

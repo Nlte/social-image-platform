@@ -116,9 +116,4 @@ def inception_v3(images,
                         scope="dropout")
                     net = slim.flatten(net, scope="flatten")
 
-    # Add summaries.
-    if add_summaries:
-        for v in end_points.values():
-            tf.contrib.layers.summaries.summarize_activation(v)
-
     return net

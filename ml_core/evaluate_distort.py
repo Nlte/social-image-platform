@@ -10,21 +10,15 @@ from MLmodel import MLClassifier
 
 FLAGS = tf.app.flags.FLAGS
 
-tf.app.flags.DEFINE_string('test_file_pattern', 'val-???-001.tfr',
+tf.app.flags.DEFINE_string('file_pattern', 'val-???-001.tfr',
                             """file pattern of test tfrecords.""")
 
 tf.app.flags.DEFINE_integer('batch_size', 1, """Batch size.""")
 
-tf.app.flags.DEFINE_string('bottleneck_dir', 'mirflickrdata/bottlenecks',
-                            """bottleneck cache directory.""")
-
 tf.app.flags.DEFINE_string('image_dir', 'mirflickrdata/images',
                             """image directory.""")
 
-tf.app.flags.DEFINE_string('mode', 'train',
-                            """Mode of the model : inference, train, benchmark.""")
-
-tf.app.flags.DEFINE_string('model_str', '',
+tf.app.flags.DEFINE_string('model_str', 'evaluate_distort',
                             """model name to store in csv.""")
 
 
@@ -57,7 +51,7 @@ def main(_):
     num_steps = int((1028)/FLAGS.batch_size) # (1 shards * nb examples per shard)
 
     for n in xrange(num_steps):
-        print(n)
+        print("Running inference on image %d" % n)
         image, annotation = sess.run([test_images, test_annotations])
         with open(FLAGS.image_dir+'/'+image[0], 'r') as f:
             image_data = f.read()
