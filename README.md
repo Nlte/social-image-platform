@@ -72,8 +72,9 @@ It is also posssible to run inference on an image with :
 ```sh
 python inference.py --image="../docs/lake.jpg"
 ```
-The inference script will produce the following output 
-<img src="https://raw.githubusercontent.com/Nlte/social-image-platform/master/docs/example_inference.png" width="50" height="50" />
+The inference script will produce the following output
+
+<img src="https://raw.githubusercontent.com/Nlte/social-image-platform/master/docs/example_inference.png" width="200" height="200" />
 ## Running the website
 
 The website was built with the Django-Angular stack.
