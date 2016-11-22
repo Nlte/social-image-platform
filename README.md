@@ -75,6 +75,9 @@ Below is an example of prediction
 
 ## Running the website
 
+<img src="https://raw.githubusercontent.com/Nlte/social-image-platform/master/docs/frontpage.png" />
+
+
 The website was built with the Django-Angular stack.
 
 Requirements : 
