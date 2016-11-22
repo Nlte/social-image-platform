@@ -8,7 +8,7 @@ from configuration import ModelConfig
 
 
 BOTTLENECK_DIR = "data/bottlenecks"
-IMAGE_DIR = "data/mirflickrdata"
+IMAGE_DIR = "data/mirflickr"
 
 
 def cache_bottlenecks(bottleneck_dir, image_dir):
