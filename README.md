@@ -24,43 +24,56 @@ Requirements
 - numpy
 
 ### Preprocess the data
-This project is based on the MIRFLICKR 25K dataset and can be downloaded from this link
-http://press.liacs.nl/mirflickr/
+This project is based on the MIRFLICKR 25K dataset.
 
 >M. J. Huiskes, M. S. Lew (2008). The MIR Flickr Retrieval Evaluation. ACM International Conference on Multimedia Information Retrieval (MIR'08), Vancouver, Canada
 
-To run the dataset processing script :
+NOTE : The dataset consists of images, annotations and metadata. It takes arround 3.5 GB on the hard-drive.
+
+First, download the dataset : 
 ```sh
 cd ml_core/mirflickrdata/
 ```
 ```sh
-python build_tfr_data.py --image_dir=images/ --annot_file=annotation.json --output_dir=output/
+# download images and annotations. Outputs "annotations.json" file
+./download_dataset.sh
 ```
-
-This script process the raw dataset into tensorflow records files : `train-???-008.tfr` , `test-???-004.tfr` , `val-???-001.tfr`
-The record file contains proto examples containing the image name, the jpeg string of the image and the labels encoded as a binary vector.
+Then, run the processing script :
+```sh
+python build_tfr_data.py
+```
+This script converts the annotations.json into tensorflow records files : `train-???-008.tfr` , `test-???-004.tfr` , `val-???-001.tfr` and store them into `output/`.
+Each record file consists of proto examples containing the image name and the labels associated with it.
 
 ### Train the network
-Training the full network end-to-end is computation intensive (one epoch takes arround 4h on a macbook pro CPU only). Therefore in this project, we'll be only training the classifier that follows the CNN, there will be no fine-tuning of Inception.
+Training the full network end-to-end is computation intensive (one epoch takes arround 4h on a macbook pro with CPU only). Therefore in this project, we'll be only training the classifier that follows the CNN, there will be no fine-tuning of Inception.
+We need to extract and save the cnn feature of each image.
+To run the caching script :
+```sh
+python cache_bottlenecks.py
+```
+This script will run each image in the CNN once to extract the image embedding vector. Each vector in stored in the output directory as `name-of-the-image.jpg.txt` . 
+It takes arround 1h30 to process the 25000 images from the dataset.
 
-First, run the caching script : 
+Once the caching is done, we can train the classifier :
 
 ```sh
-python cache_bottlenecks.py --image_dir=mirflickrdata/images/ --output_dir=mirflickrdata/bottlenecks/
+python train.py
 ```
-This script will run each image in the CNN once to extract the image embedding vector. Each vector in stored in the output directory as name-of-the-image.jpg.txt . 
-It takes arround 1h30 to process the 25000 images. Since the process is quite long, it is possible to skip this step and download the archive containing all bottlenecks here https://www.dropbox.com/s/acmun3rqvlz87bd/bottlenecks.zip?dl=0
+The hyperparameters of the model can be modified in the class `ModelConfig` of `configuration.py` .
 
-Once the caching is done, we can train the classifier
-
+Running the evaluation of the trained model is done with :
 ```sh
-python train.py --tfr_dir=mirflickrdata/ --model_dir=models/model
+python evaluate.py --model_str="1hidden-1500"
 ```
-and evaluate it
-```sh
-python evaluate.py --tfr_dir=mirflickrdata/ --model_dir=models/model
-```
+The results will be stored under `model_str` in the `results.csv` file.
 
+It is also posssible to run inference on an image with :
+```sh
+python inference.py --image="../docs/lake.jpg"
+```
+The inference script will produce the following output 
+![](https://raw.githubusercontent.com/Nlte/social-image-platform/master/docs/example_inference.jpg)
 
 ## Running the website
 
