@@ -34,8 +34,6 @@ NOTE : The dataset consists of images, annotations and metadata. It takes arroun
 First, download the dataset : 
 ```sh
 cd ml_core/data/
-```
-```sh
 # download images and annotations. Outputs "annotations.json" file
 ./download_dataset.sh
 ```
