@@ -73,7 +73,7 @@ It is also posssible to run inference on an image with :
 python inference.py --image="../docs/lake.jpg"
 ```
 The inference script will produce the following output 
-![](https://raw.githubusercontent.com/Nlte/social-image-platform/master/docs/example_inference.png)
+![](https://raw.githubusercontent.com/Nlte/social-image-platform/master/docs/example_inference.png =50x50)
 
 ## Running the website
 
