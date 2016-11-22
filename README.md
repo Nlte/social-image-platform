@@ -2,15 +2,13 @@
 ## Overview 
 This project presents a neural network that learns annotating an image with a set tags.
 
-// photos + annot
-
 The neural network is also deployed on a photo sharing website where users can upload images.
 
 ### Architecture
 The neural network is a multilabel classifier is composed of a deep convolution neural network and a multilayer perceptron.
 First the image is sent to the CNN which embeds the image into a fix-length vector. Then, the multilayer perceptron predicts the labels that describe the best the image.
 <div style="text-align:center">
-<img src="https://raw.githubusercontent.com/Nlte/social-image-platform/master/docs/architecture.jpg" align="center"/>
+<img src="https://raw.githubusercontent.com/Nlte/social-image-platform/master/docs/architecture.jpg"/>
 </div>
 The model uses transfer learning with Inception-v3 as it shows state of the art performances on the ILSVR challenge.
 For more information you can check out this [tensorflow-tutorial](https://www.tensorflow.org/versions/r0.9/how_tos/image_retraining/index.html)
@@ -49,6 +47,7 @@ Training the full network end-to-end is computation intensive (one epoch takes a
 We need to extract and save the cnn feature of each image.
 To run the caching script :
 ```sh
+cd ..
 python cache_bottlenecks.py
 ```
 This script will run each image in the CNN once to extract the image embedding vector. Each vector in stored in the output directory as `name-of-the-image.jpg.txt` . 
@@ -57,7 +56,7 @@ It takes arround 1h30 to process the 25000 images from the dataset.
 Once the caching is done, we can train the classifier :
 
 ```sh
-# The hyperparameters can be modifier in the class ModelConfig of configuration.py
+# The hyperparameters can be modified in the class ModelConfig of configuration.py
 python train.py
 ```
 Running the evaluation of the trained model is done with :
@@ -69,14 +68,22 @@ It is also posssible to run inference on an image with :
 ```sh
 python inference.py --image="../docs/lake.jpg"
 ```
-The inference script will produce the following output
-
+Below is an example of prediction
 <div style="text-align:center">
-<img src="https://raw.githubusercontent.com/Nlte/social-image-platform/master/docs/example_inference.png" width="300" height="300" align="center"/>
+<img src="https://raw.githubusercontent.com/Nlte/social-image-platform/master/docs/example_inference.png" width="300" height="300"/>
 </div>
+
 ## Running the website
 
 The website was built with the Django-Angular stack.
+
+Requirements : 
+- Django (tested on 1.10.2)
+- djangorestframework (tested on 3.5.0)
+- drf-nested-routers (tested on 0.11.1)
+- tensorflow (tested on 0.11)
+- node 
+- bower 
 
 ```sh
 cd img_platform/
