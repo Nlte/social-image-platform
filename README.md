@@ -57,16 +57,14 @@ It takes arround 1h30 to process the 25000 images from the dataset.
 Once the caching is done, we can train the classifier :
 
 ```sh
+# The hyperparameters can be modifier in the class ModelConfig of configuration.py
 python train.py
 ```
-The hyperparameters of the model can be modified in the class `ModelConfig` of `configuration.py` .
-
 Running the evaluation of the trained model is done with :
 ```sh
+# The results will be saved under '<model_str>' in 'results.csv' file
 python evaluate.py --model_str="1hidden-1500"
 ```
-The results will be stored under `model_str` in the `results.csv` file.
-
 It is also posssible to run inference on an image with :
 ```sh
 python inference.py --image="../docs/lake.jpg"
