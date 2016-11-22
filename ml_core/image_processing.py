@@ -4,7 +4,6 @@ from __future__ import print_function
 
 
 import tensorflow as tf
-import matplotlib
 
 tf.logging.set_verbosity(tf.logging.INFO)
 

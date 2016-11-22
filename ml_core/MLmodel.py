@@ -63,7 +63,7 @@ class MLClassifier(object):
 
 
     def build_inception(self):
-        """Build the inception v3 CNN."""
+        """Build the Inception v3 CNN."""
 
         cnn.maybe_download_and_extract(self.config.inception_dir)
         inception_output = cnn.inception_v3(self.images, trainable=self.config.train_inception)

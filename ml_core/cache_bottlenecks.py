@@ -7,16 +7,13 @@ from MLmodel import MLClassifier
 from configuration import ModelConfig
 
 
-FLAGS = tf.app.flags.FLAGS
-
-tf.app.flags.DEFINE_string('bottleneck_dir', 'mirflickrdata/bottlenecks',
-                            """bottleneck cache directory.""")
-
-tf.app.flags.DEFINE_string('image_dir', 'mirflickrdata/images',
-                            """image directory.""")
+BOTTLENECK_DIR = "data/bottlenecks"
+IMAGE_DIR = "data/mirflickrdata"
 
 
 def cache_bottlenecks(bottleneck_dir, image_dir):
+    """Run each image of image_dir in Inceptionv3 and save the image
+        embedding vector in bottleneck_dir."""
 
     if not tf.gfile.IsDirectory(bottleneck_dir):
         tf.logging.info("Creating output directory: %s" % bottleneck_dir)
@@ -24,14 +21,10 @@ def cache_bottlenecks(bottleneck_dir, image_dir):
 
     config = ModelConfig("inference")
 
-<<<<<<< HEAD
     data = tf.placeholder(tf.string, [])
     target = tf.placeholder(tf.float32, [None, config.num_classes])
 
     model = MLClassifier(config, data, target)
-=======
-    model = MLClassifier(config)
->>>>>>> origin/master
     model.build()
 
     sess = tf.Session()
@@ -43,6 +36,8 @@ def cache_bottlenecks(bottleneck_dir, image_dir):
     images = []
     for img in os.listdir(image_dir):
         if fnmatch(img, '.*'):
+            continue
+        if os.path.isdir(os.path.join(image_dir, img)):
             continue
         images.append(img)
 
@@ -71,6 +66,4 @@ def cache_bottlenecks(bottleneck_dir, image_dir):
 
 
 if __name__ == '__main__':
-    cache_bottlenecks(FLAGS.bottleneck_dir, FLAGS.image_dir)
-
-from fnmatch import fnmatch
+    cache_bottlenecks(BOTTLENECK_DIR, IMAGE_DIR)

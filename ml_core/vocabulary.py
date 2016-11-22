@@ -7,14 +7,9 @@ import tensorflow as tf
 
 
 class Vocabulary(object):
-    """Vocabulary class for an image-to-text model."""
+    """Vocabulary of the dataset."""
+    
     def __init__(self, vocab_file):
-        """Initializes the vocabulary.
-        Args:
-            vocab_file: File containing the vocabulary, where the words are the first
-            whitespace-separated token on each line (other tokens are ignored) and
-            the word ids are the corresponding line numbers.
-        """
         if not tf.gfile.Exists(vocab_file):
             tf.logging.fatal("Vocab file %s not found.", vocab_file)
         tf.logging.info("Initializing vocabulary from file: %s", vocab_file)

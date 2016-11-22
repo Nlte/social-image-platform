@@ -7,47 +7,31 @@ from datetime import datetime
 from configuration import ModelConfig
 from MLmodel import MLClassifier
 
+LOG_DIR = "models/model"
+TFR_DIR = "data/output"
+BOTTLENECK_DIR = "data/bottlenecks"
+TRAIN_FILE_PATTERN = "train-???-008.tfr"
+VAL_FILE_PATTERN = "val-???-001.tfr"
 
-FLAGS = tf.app.flags.FLAGS
-
-tf.app.flags.DEFINE_string('log_dir', 'models/model', """logging directory""")
-
-tf.app.flags.DEFINE_integer('num_epoch', 10, """Number of epoch to run.""")
-
-tf.app.flags.DEFINE_integer('batch_size', 64, """Batch size.""")
-
-tf.app.flags.DEFINE_string('train_file_pattern', 'train-???-008.tfr',
-                            """file pattern of training tfrecords.""")
-
-tf.app.flags.DEFINE_string('val_file_pattern', 'val-???-001.tfr',
-                            """file pattern of training tfrecords.""")
-
-tf.app.flags.DEFINE_string('bottleneck_dir', 'mirflickrdata/bottlenecks',
-                            """bottleneck cache directory.""")
-
-tf.app.flags.DEFINE_string('image_dir', 'mirflickrdata/images',
-                            """image directory.""")
-
-tf.app.flags.DEFINE_string('mode', 'train',
-                            """Mode of the model : inference, train, benchmark.""")
-
+NUM_EPOCH = 10
+BATCH_SIZE = 64
 
 
 def main(_):
 
-    if tf.gfile.IsDirectory(FLAGS.log_dir):
-        tf.gfile.DeleteRecursively(FLAGS.log_dir)
+    if tf.gfile.IsDirectory(LOG_DIR):
+        tf.gfile.DeleteRecursively(LOG_DIR)
 
-    if not tf.gfile.IsDirectory(FLAGS.log_dir):
-        tf.logging.info("Creating output directory: %s" % FLAGS.log_dir)
-        tf.gfile.MakeDirs(FLAGS.log_dir)
+    if not tf.gfile.IsDirectory(LOG_DIR):
+        tf.logging.info("Creating output directory: %s" % LOG_DIR)
+        tf.gfile.MakeDirs(LOG_DIR)
 
-    config = ModelConfig(FLAGS.mode)
+    config = ModelConfig("train")
 
-    train_images, train_annotations = inputs.input_pipeline(FLAGS.train_file_pattern,
-                                    num_classes=config.num_classes, batch_size=FLAGS.batch_size)
+    train_images, train_annotations = inputs.input_pipeline(TFR_DIR, TRAIN_FILE_PATTERN,
+                                    num_classes=config.num_classes, batch_size=BATCH_SIZE)
 
-    val_images, val_annotations = inputs.input_pipeline(FLAGS.val_file_pattern,
+    val_images, val_annotations = inputs.input_pipeline(TFR_DIR, VAL_FILE_PATTERN,
                                     num_classes=config.num_classes, batch_size=2056)
 
     data = tf.placeholder(tf.float32, [None, config.bottleneck_dim])
@@ -64,20 +48,20 @@ def main(_):
     sess.run(tf.initialize_all_variables())
     sess.run(tf.initialize_local_variables())
 
-    train_writer = tf.train.SummaryWriter(FLAGS.log_dir + '/train', sess.graph)
-    test_writer = tf.train.SummaryWriter(FLAGS.log_dir + '/test')
+    train_writer = tf.train.SummaryWriter(LOG_DIR + '/train', sess.graph)
+    test_writer = tf.train.SummaryWriter(LOG_DIR + '/test')
 
     coord = tf.train.Coordinator()
     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
 
     print("%s Start training." % datetime.now())
 
-    num_batch_per_epoch = int((9 * 2056)/FLAGS.batch_size)  # (nb shards * nb examples per shard) / batch size
-    num_steps = FLAGS.num_epoch * num_batch_per_epoch
+    num_batch_per_epoch = int((9 * 2056)/BATCH_SIZE)  # (nb shards * nb examples per shard) / batch size
+    num_steps = NUM_EPOCH * num_batch_per_epoch
 
     for n in xrange(num_steps):
         images, annotations = sess.run([train_images, train_annotations])
-        bottlenecks = inputs.get_bottlenecks(images)
+        bottlenecks = inputs.get_bottlenecks(images, BOTTLENECK_DIR)
         fetches = {'opt':model.optimize, 'loss':model.loss, 'summary': merged}
         feed_dict = {data: bottlenecks, target: annotations}
         v = sess.run(fetches, feed_dict)
@@ -86,7 +70,7 @@ def main(_):
 
         if n%125 == 0:
             images, annotations = sess.run([val_images, val_annotations])
-            bottlenecks = inputs.get_bottlenecks(images)
+            bottlenecks = inputs.get_bottlenecks(images, BOTTLENECK_DIR)
             fetches = {'auc_ops': model.auc_op, 'summary': merged}
             feed_dict = {data: bottlenecks, target: annotations}
             v = sess.run(fetches, feed_dict)
@@ -95,7 +79,7 @@ def main(_):
                     (datetime.now(), mean_auc))
             test_writer.add_summary(v['summary'], n)
 
-    save_path = saver.save(sess, os.path.join(FLAGS.log_dir, 'model.ckpt'))
+    save_path = saver.save(sess, os.path.join(LOG_DIR, 'model.ckpt'))
     print("Model saved in file: %s" % save_path)
 
     coord.request_stop()

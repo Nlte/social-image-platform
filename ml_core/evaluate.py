@@ -8,34 +8,25 @@ from configuration import ModelConfig
 from MLmodel import MLClassifier
 
 
-FLAGS = tf.app.flags.FLAGS
+BOTTLENECK_DIR = "data/bottlenecks"
+TFR_DIR = "data/output"
+TEST_FILE_PATTERN = "test-???-004.tfr"
 
-tf.app.flags.DEFINE_string('test_file_pattern', 'test-???-004.tfr',
-                            """file pattern of test tfrecords.""")
 
-tf.app.flags.DEFINE_integer('batch_size', 100, """Batch size.""")
+BATCH_SIZE = 100
 
-tf.app.flags.DEFINE_string('bottleneck_dir', 'mirflickrdata/bottlenecks',
-                            """bottleneck cache directory.""")
-
-tf.app.flags.DEFINE_string('image_dir', 'mirflickrdata/images',
-                            """image directory.""")
-
-tf.app.flags.DEFINE_string('mode', 'train',
-                            """Mode of the model : inference, train, benchmark.""")
+FLAGS = tf.flags.FLAGS
 
 tf.app.flags.DEFINE_string('model_str', '',
                             """model name to store in csv.""")
-
-
 
 def main(_):
 
     config = ModelConfig("train")
     config.keep_prob = 1.0  # desactivate the dropout
 
-    test_images, test_annotations = inputs.input_pipeline(FLAGS.test_file_pattern,
-                                    num_classes=config.num_classes, batch_size=FLAGS.batch_size)
+    test_images, test_annotations = inputs.input_pipeline(TFR_DIR, TEST_FILE_PATTERN,
+                                    num_classes=config.num_classes, batch_size=BATCH_SIZE)
 
     data = tf.placeholder(tf.float32, [None, config.bottleneck_dim])
     target = tf.placeholder(tf.float32, [None, config.num_classes])
@@ -53,11 +44,11 @@ def main(_):
 
     print("%s Running test..." % datetime.now())
 
-    num_steps = int((4 * 1028)/FLAGS.batch_size) # (nb shards * nb examples per shard)
+    num_steps = int((4 * 1028)/BATCH_SIZE) # (nb shards * nb examples per shard)
 
     for n in xrange(num_steps):
         images, annotations = sess.run([test_images, test_annotations])
-        bottlenecks = inputs.get_bottlenecks(images)
+        bottlenecks = inputs.get_bottlenecks(images, BOTTLENECK_DIR)
         fetches = {'auc_ops': model.auc_op}
         feed_dict = {data: bottlenecks, target: annotations}
         v = sess.run(fetches, feed_dict)
@@ -70,7 +61,7 @@ def main(_):
 
     # store result in csv
     dataframe = {'model':FLAGS.model_str,
-                'mean AUC': v['mean_auc']}
+                'mean_auc': v['mean_auc']}
 
     for i, k in enumerate(v['auc']):
         label = model.vocabulary.id_to_word(i)

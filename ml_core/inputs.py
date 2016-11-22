@@ -6,17 +6,15 @@ import os
 
 import tensorflow as tf
 
-from configuration import ModelConfig
 from tensorflow.python.framework import ops
 from tensorflow.python.framework import dtypes
-
-config = ModelConfig("train")
 
 tf.logging.set_verbosity(tf.logging.INFO)
 
 
-
 def parse_sequence_example(serialized, image_feature, annotation_feature):
+    """Parse a sequence example proto : returns the image name and the k-hot annotation."""
+
     context, sequence = tf.parse_single_sequence_example(
         serialized,
         context_features={
@@ -33,6 +31,8 @@ def parse_sequence_example(serialized, image_feature, annotation_feature):
 
 
 def read_and_decode(filename_queue):
+    """Read filename queue and return the content of sequence examples."""
+
     reader = tf.TFRecordReader()
     _, record_string = reader.read(filename_queue)
     image, annotation = parse_sequence_example(record_string, 'image/filename', 'image/annotation_bin')
@@ -41,9 +41,11 @@ def read_and_decode(filename_queue):
     return image, annotation_float
 
 
-def input_pipeline(file_pattern, num_classes, batch_size):
+def input_pipeline(tfr_dir, file_pattern, num_classes, batch_size):
+    """Create an input batch queue for one file pattern (ex: val-???-001.tfr)"""
+
     filenames = []
-    filenames.extend(tf.gfile.Glob(config.tfr_dir + '/' + file_pattern))
+    filenames.extend(tf.gfile.Glob(os.path.join(tfr_dir, file_pattern)))
     if not filenames:
         tf.logging.fatal("No input files matching %s" % file_pattern)
     else:
@@ -56,10 +58,12 @@ def input_pipeline(file_pattern, num_classes, batch_size):
     return image_batch, annot_batch
 
 
-def get_bottlenecks(images):
+def get_bottlenecks(images, bottleneck_dir):
+    """Returns the bottlenecks for the list of images in argument."""
+
     bottlenecks = []
     for image in images:
-        bottleneck_path = os.path.join(config.bottleneck_dir, image+'.txt')
+        bottleneck_path = os.path.join(bottleneck_dir, image+'.txt')
         with open(bottleneck_path, 'r') as bottleneck_file:
             bottleneck_string = bottleneck_file.read()
         bottleneck_values = [float(x) for x in bottleneck_string.split(',')]

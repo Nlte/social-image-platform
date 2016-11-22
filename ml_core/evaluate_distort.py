@@ -10,13 +10,11 @@ from MLmodel import MLClassifier
 
 FLAGS = tf.app.flags.FLAGS
 
-tf.app.flags.DEFINE_string('file_pattern', 'val-???-001.tfr',
-                            """file pattern of test tfrecords.""")
+IMAGE_DIR = "data/mirflickr"
+TFR_DIR = "data/output"
+VAL_FILE_PATTERN = "val-???-001.tfr"
+BATCH_SIZE = 1
 
-tf.app.flags.DEFINE_integer('batch_size', 1, """Batch size.""")
-
-tf.app.flags.DEFINE_string('image_dir', 'mirflickrdata/images',
-                            """image directory.""")
 
 tf.app.flags.DEFINE_string('model_str', 'evaluate_distort',
                             """model name to store in csv.""")
@@ -28,8 +26,8 @@ def main(_):
     config = ModelConfig("inference")
     config.keep_prob = 1.0  # desactivate the dropout
 
-    test_images, test_annotations = inputs.input_pipeline(FLAGS.test_file_pattern,
-                                    num_classes=config.num_classes, batch_size=FLAGS.batch_size)
+    test_images, test_annotations = inputs.input_pipeline(TFR_DIR, VAL_FILE_PATTERN,
+                                    num_classes=config.num_classes, batch_size=BATCH_SIZE)
 
     data = tf.placeholder(tf.string, [])
     target = tf.placeholder(tf.float32, [None, config.num_classes])
@@ -46,14 +44,12 @@ def main(_):
     coord = tf.train.Coordinator()
     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
 
-    print("%s Running test..." % datetime.now())
-
-    num_steps = int((1028)/FLAGS.batch_size) # (1 shards * nb examples per shard)
+    num_steps = int((1028)/BATCH_SIZE) # (1 shards * nb examples per shard)
 
     for n in xrange(num_steps):
         print("Running inference on image %d" % n)
         image, annotation = sess.run([test_images, test_annotations])
-        with open(FLAGS.image_dir+'/'+image[0], 'r') as f:
+        with open(os.path.join(IMAGE_DIR, image[0]), 'r') as f:
             image_data = f.read()
 
         fetches = {'auc_ops': model.auc_op}
@@ -81,7 +77,6 @@ def main(_):
         df_buffer = pd.DataFrame(dataframe, columns=dataframe.keys(), index=[len_df+1])
         concat = pd.concat([df, df_buffer])
         concat.to_csv('results.csv', index=False)
-
 
     coord.request_stop()
     coord.join(threads)
