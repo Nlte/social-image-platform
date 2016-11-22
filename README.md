@@ -46,10 +46,10 @@ Training the full network end-to-end is computation intensive (one epoch takes a
 First, run the caching script : 
 
 ```sh
-python cache_bottlenecks.py --image_dir=mirflickrdata/images/ --output_dir=mirflickrdata/output/
+python cache_bottlenecks.py --image_dir=mirflickrdata/images/ --output_dir=mirflickrdata/bottlenecks/
 ```
 This script will run each image in the CNN once to extract the image embedding vector. Each vector in stored in the output directory as name-of-the-image.jpg.txt . 
-It takes arround 1h30 to process the 25000 images.
+It takes arround 1h30 to process the 25000 images. Since the process is quite long, it is possible to skip this step and download the archive containing all bottlenecks here https://www.dropbox.com/s/acmun3rqvlz87bd/bottlenecks.zip?dl=0
 
 Once the caching is done, we can train the classifier
 
