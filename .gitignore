@@ -1,2 +1,4 @@
+img_platform/media
+img_platform/db.sqlite3
 ml_core/models
 *.pyc
