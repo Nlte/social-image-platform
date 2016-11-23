@@ -91,6 +91,8 @@ Requirements :
 ```sh
 cd img_platform/
 pip install -r requirements.txt
-python manage.py migrate
+npm install -g bower
+npm install
+bower install
 python manage.py runserver
 ```
