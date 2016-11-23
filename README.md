@@ -75,8 +75,9 @@ Below is an example of prediction
 
 ### Bibliography
 
-Ali Sharif Razavian Hossein Azizpour Josephine Sullivan Stefan Carlsson. CNN Features off-the-shelf: an Astounding Baseline for Recognition, CVAP, KTH (Royal Institute of Technology)
-Stockholm, Sweden [arxiv](https://arxiv.org/abs/1403.6382)
+- Ali Sharif Razavian, Hossein Azizpour, Josephine Sullivan and Stefan Carlsson. CNN Features off-the-shelf: an Astounding Baseline for Recognition. CVAP KTH, 2014 [[arxiv]](https://arxiv.org/abs/1403.6382)
+- Min-Ling Zhang and Zhi-Hua Zhou. A Review on Multi-Label Learning Algorithms. IEEE Transactions on Knowledge and Data Engineering, 2014. [[link]](http://cse.seu.edu.cn/people/zhangml/files/TKDE'13.pdf)
+- Maxime Oquab, Leon Bottou, Ivan Laptev and Josef Sivic. Learning and Transferring Mid-Level Image Representations using Convolutional Neural Networks. In CVPR, 2014. [[link]](http://www.di.ens.fr/willow/pdfscurrent/oquab14cvpr.pdf)
 
 ## Running the website
 
