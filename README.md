@@ -1,4 +1,7 @@
 # Social Image Description Platform
+This project is part of Udacity MLND program.
+The report is available here : 
+
 ## Overview 
 This project presents a neural network that learns annotating an image with a set tags.
 
