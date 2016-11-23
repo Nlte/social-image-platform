@@ -84,7 +84,7 @@ Below is an example of prediction
 - Antonio Torralba and Alexei A. Efros. Unbiased Look at Dataset Bias. In CVPR, 2011[[link]](https://people.csail.mit.edu/torralba/publications/datasets_cvpr11.pdf)
 - Fei-Fei Li, Andrej Karpathy, Justin Johnson. Stanford Course CS231n: Convolutional Neural Networks for Visual Recognition [[Website]](http://cs231n.stanford.edu)
 - Sebastian Ruder. An overview of gradient descent optimization algorithms. [[Website]](http://sebastianruder.com/optimizing)
-- Chris Shallue. Show and Tell: A Neural Image Caption Generator. [[GitHub]]https://github.com/cshallue/models/tree/master/im2txt
+- Chris Shallue. Show and Tell: A Neural Image Caption Generator. [[GitHub]](https://github.com/cshallue/models/tree/master/im2txt)
 
 
 
