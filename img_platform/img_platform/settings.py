@@ -26,9 +26,9 @@ sys.path.append(os.path.join(PROJECT_ROOT, "ml_core"))
 SECRET_KEY = 'k(c!scqmzrxoszw%--d$(r(5n%une9j#^nql&=l^c3bypbq0$_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
