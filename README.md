@@ -94,5 +94,5 @@ pip install -r requirements.txt
 npm install -g bower
 npm install
 bower install
-python manage.py runserver
+python manage.py runserver --noreload
 ```
