@@ -24,6 +24,7 @@ This github repo is divided into 2 parts :
 Requirements
 - tensorflow (tested on 0.11) 
 - numpy
+- matplotlib
 
 ### Preprocess the data
 This project is based on the MIRFLICKR 25K dataset.
