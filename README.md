@@ -1,5 +1,6 @@
 # Social Image Description Platform
 This project is part of Udacity MLND program.
+
 The report is available here : 
 
 ## Overview 
@@ -31,7 +32,7 @@ This project is based on the MIRFLICKR 25K dataset.
 
 >M. J. Huiskes, M. S. Lew (2008). The MIR Flickr Retrieval Evaluation. ACM International Conference on Multimedia Information Retrieval (MIR'08), Vancouver, Canada
 
-NOTE : The dataset consists of images, annotations and metadata. It takes arround 3.5 GB on the hard-drive.
+NOTE : The dataset consists of 25000 images, annotations and metadata. It takes arround 3.5 GB on the hard-drive.
 
 First, download the dataset : 
 ```sh
