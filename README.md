@@ -93,20 +93,24 @@ Below is an example of prediction
 <img src="https://raw.githubusercontent.com/Nlte/social-image-platform/master/docs/frontpage.png" />
 
 
-The website was built with the Django-Angular stack.
+The website was built with the Django-Angular stack. There is no need to train a model before running the server. A pretrained model has already been saved in the repo.
 
 Requirements : 
 - Django (tested on 1.10.2)
 - djangorestframework (tested on 3.5.0)
 - drf-nested-routers (tested on 0.11.1)
 - tensorflow (tested on 0.11)
-- node 
-- bower 
+- node [[download-page]](https://nodejs.org/en/download/)
 
+It is preferable to create a virtual environment before proceeding to the installation of the website.
+```sh
+conda create --name platform  # or mkvirtualenv
+conda activate platform
+```
 ```sh
 cd img_platform/
-pip install -r requirements.txt
-npm install -g bower
+pip install -r requirements.txt  # install the django+packages
+npm install -g bower  # install bower package manager
 npm install
 bower install
 python manage.py runserver --noreload
