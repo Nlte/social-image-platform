@@ -73,6 +73,11 @@ Below is an example of prediction
 <img src="https://raw.githubusercontent.com/Nlte/social-image-platform/master/docs/example_inference.png" width="300" height="300"/>
 </div>
 
+### Bibliography
+
+Ali Sharif Razavian Hossein Azizpour Josephine Sullivan Stefan Carlsson. CNN Features off-the-shelf: an Astounding Baseline for Recognition, CVAP, KTH (Royal Institute of Technology)
+Stockholm, Sweden [arxiv](https://arxiv.org/abs/1403.6382)
+
 ## Running the website
 
 <img src="https://raw.githubusercontent.com/Nlte/social-image-platform/master/docs/frontpage.png" />
