@@ -73,11 +73,19 @@ Below is an example of prediction
 <img src="https://raw.githubusercontent.com/Nlte/social-image-platform/master/docs/example_inference.png" width="300" height="300"/>
 </div>
 
-### Bibliography
+### References
 
-- Ali Sharif Razavian, Hossein Azizpour, Josephine Sullivan and Stefan Carlsson. CNN Features off-the-shelf: an Astounding Baseline for Recognition. CVAP KTH, 2014 [[arxiv]](https://arxiv.org/abs/1403.6382)
+- Ali Sharif Razavian, Hossein Azizpour, Josephine Sullivan and Stefan Carlsson. CNN Features off-the-shelf: an Astounding Baseline for Recognition. CVAP KTH, 2014 [[link]](https://arxiv.org/abs/1403.6382)
 - Min-Ling Zhang and Zhi-Hua Zhou. A Review on Multi-Label Learning Algorithms. IEEE Transactions on Knowledge and Data Engineering, 2014. [[link]](http://cse.seu.edu.cn/people/zhangml/files/TKDE'13.pdf)
 - Maxime Oquab, Leon Bottou, Ivan Laptev and Josef Sivic. Learning and Transferring Mid-Level Image Representations using Convolutional Neural Networks. In CVPR, 2014. [[link]](http://www.di.ens.fr/willow/pdfscurrent/oquab14cvpr.pdf)
+- Oriol Vinyals, Alexander Toshev, Samy Bengio and Dumitru Erhan. Show and Tell: A Neural Image Caption Generator. In CVPR, 2014 [[link]](https://arxiv.org/abs/1411.4555)
+- Mohammad S Sorower. A Literature Survey on Algorithms for Multi-label Learning. Oregon State University, 2010. [[link]](http://people.oregonstate.edu/~sorowerm/pdf/Qual-Multilabel-Shahed-CompleteVersion.pdf)
+- Mark J. Huiskes and Michael S. Lew. The MIR Flickr Retrieval Evaluation. ACM International Conference on Multimedia Information Retrieval, 2008. [[link]](http://press.liacs.nl/mirflickr/mirflickr.pdf)
+- Antonio Torralba and Alexei A. Efros. Unbiased Look at Dataset Bias. In CVPR, 2011[[link]](https://people.csail.mit.edu/torralba/publications/datasets_cvpr11.pdf)
+- Fei-Fei Li, Andrej Karpathy, Justin Johnson. Stanford Course CS231n: Convolutional Neural Networks for Visual Recognition [[Website]](http://cs231n.stanford.edu)
+- Sebastian Ruder. An overview of gradient descent optimization algorithms. [[Website]](http://sebastianruder.com/optimizing)
+
+
 
 ## Running the website
 
