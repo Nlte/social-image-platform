@@ -102,7 +102,7 @@ Requirements :
 - Django (tested on 1.10.2)
 - djangorestframework (tested on 3.5.0)
 - drf-nested-routers (tested on 0.11.1)
-- tensorflow (tested on 0.11)
+- tensorflow (tested on 0.11) [[installation guide]](https://www.tensorflow.org/versions/r0.11/get_started/os_setup.html)
 - node [[download-page]](https://nodejs.org/en/download/)
 
 It is preferable to create a virtual environment before proceeding to the installation of the website.
