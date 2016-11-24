@@ -61,14 +61,22 @@ It takes arround 1h30 to process the 25000 images from the dataset.
 Once the caching is done, we can train the classifier :
 
 ```sh
-# The hyperparameters can be modified in the class ModelConfig of configuration.py
 python train.py
 ```
-Running the evaluation of the trained model is done with :
+This script builds a model according to the hyperparameters set in the class `ModelConfig` in `configuration.py`.
+During the training process, the loss values and the mean AUC can be monitored in tensorboard.
+```sh
+# In a new terminal
+tensorboard --logdir=models/model
+```
+The model is trained for 10 epochs, after that a checkpoint is created in `ml_core/models/model`.
+
+We can now proceed to the evaluation of our freshly trained model :
 ```sh
 # The results will be saved under '<model_str>' in 'results.csv' file
 python evaluate.py --model_str="1hidden-1500"
 ```
+
 It is also posssible to run inference on an image with :
 ```sh
 python inference.py --image="../docs/lake.jpg"
