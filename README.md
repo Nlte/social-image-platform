@@ -19,9 +19,10 @@ For more information you can check out this [tensorflow-tutorial](https://www.te
 
 This github repo is divided into 2 parts : 
 - img_platform : contains all the sources for the website.
-- ml_core : contains the sources for the classifier. It can be run independently of the website.
+- ml_core : contains the sources for the classifier.
 
-## Running the neural network
+
+## Training the neural network
 Requirements
 - tensorflow (tested on 0.11) 
 - numpy
