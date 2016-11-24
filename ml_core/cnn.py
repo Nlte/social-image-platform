@@ -15,6 +15,7 @@ DATA_URL = "http://download.tensorflow.org/models/inception_v3_2016_08_28.tar.gz
 
 def maybe_download_and_extract(dest_directory):
     """Download and extract Inceptionv3 pretrained checkpoint."""
+    
     if not os.path.exists(dest_directory):
         os.makedirs(dest_directory)
     filename = DATA_URL.split('/')[-1]

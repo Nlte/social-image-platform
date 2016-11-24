@@ -14,7 +14,7 @@ tf.logging.set_verbosity(tf.logging.INFO)
 
 
 def linear(x, name, size):
-    """Returns linear layer."""
+    """Returns a linear layer."""
 
     W = tf.get_variable(name+"/W", [x.get_shape()[1], size])
     b = tf.get_variable(name+"/b", [size], initializer=tf.zeros_initializer)

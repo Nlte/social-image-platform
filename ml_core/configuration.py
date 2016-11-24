@@ -11,37 +11,38 @@ class ModelConfig(object):
 
     def __init__(self, mode):
 
-        # directories and files
+        ## directories and files ##
+        # working directory
         dirname = path.dirname(__file__)
-
+        # directory to store the inception v3 checkpoint
         self.inception_dir = path.join(dirname,"models/inception")
-
+        # inception v3 checkpoint file
         self.inception_checkpoint = path.join(dirname,"models/inception/inception_v3.ckpt")
-
+        # mlp checkpoint file
         self.model_checkpoint = path.join(dirname,"models/model/model.ckpt")
-
+        # list of labels
         self.vocab_file = path.join(dirname,"data/word_counts.txt")
 
-        # model
+        ## model ##
         self.mode = mode
         assert self.mode in ["train", "inference"]
-
+        # Inception fine-tuning
         self.train_inception = False
-
+        # Distort input image
         self.distort_image = False
-
+        # Learning rate of the optimizer
         self.learning_rate = 5e-4
-
+        # Dimension of the image embedding vector
         self.bottleneck_dim = 2048
-
+        # Number of hidden layers
         self.num_hidden = 1
-
+        # Dimension of hidden layers
         self.hidden_dim = 1500
-
+        # Kepp prob for the dropout layer
         self.keep_prob = 0.9
-
+        # create the Vocabulary object
         self.vocabulary = Vocabulary(self.vocab_file)
-
+        # output dimension (total number of labels in the dataset)
         self.num_classes = len(self.vocabulary.vocab)
 
 
@@ -50,7 +51,8 @@ class ServerConfig(object):
 
     def __init__(self, mode):
 
-        # directories and files
+        ## directories and files ##
+
         dirname = path.dirname(__file__)
 
         self.inception_dir = path.join(dirname,"models/inception")
@@ -61,7 +63,7 @@ class ServerConfig(object):
 
         self.vocab_file = path.join(dirname,"data/word_counts.txt")
 
-        # model
+        ## model ##
         self.mode = "inference"
 
         self.train_inception = False
