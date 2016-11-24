@@ -3,3 +3,4 @@ img_platform/media
 ml_core/models
 *.pyc
 *.ipynb_checkpoints
+*/migrations/
