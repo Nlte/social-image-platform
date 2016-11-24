@@ -128,3 +128,5 @@ npm install
 bower install
 python manage.py runserver --noreload
 ```
+
+After the initialization of the tensorflow model and the django server are done. We can navigate to `127.0.0.1:8000` and play with the website.
