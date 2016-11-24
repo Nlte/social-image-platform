@@ -2,3 +2,4 @@ img_platform/db.sqlite3
 img_platform/media
 ml_core/models
 *.pyc
+*.ipynb_checkpoints
