@@ -71,13 +71,13 @@ tensorboard --logdir=models/model
 ```
 The model is trained for 10 epochs, after that a checkpoint is created in `ml_core/models/model`.
 
-We can now proceed to the evaluation of our freshly trained model :
+We can now proceed to the evaluation of our newly trained model :
 ```sh
-# The results will be saved under '<model_str>' in 'results.csv' file
 python evaluate.py --model_str="1hidden-1500"
 ```
+This script evaluates the model on the test dataset. The results are stored in `ml_core/results.csv` under the string passed as argument.
 
-It is also posssible to run inference on an image with :
+It is also possible to run inference on an image with :
 ```sh
 python inference.py --image="../docs/lake.jpg"
 ```
