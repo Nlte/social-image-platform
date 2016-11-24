@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Download annotations and images of the MIRFLICKR 25K dataset
+# and compile image+annotations into one output file : "annotations.json"
+
 if [ "$(uname)" == "Darwin" ]; then
   UNZIP="tar -xf"
 else

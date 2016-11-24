@@ -20,6 +20,7 @@ ANNOT_FILE = "annotations.json"
 ImageMetadata = namedtuple("ImageMetadata",["filename", "annotation"])
 
 class Vocabulary(object):
+    """Vocabulary class to handle int/str labels."""
 
     def __init__(self, vocab):
         self._vocab = vocab
@@ -31,6 +32,7 @@ class Vocabulary(object):
 
 
 def _is_png(filename):
+    """Check if an image is png format."""
     return '.png' in filename
 
 
@@ -55,6 +57,8 @@ def _bytes_feature_list(values):
 
 
 def _load_and_process_metadata(annotations_file):
+    """Convert the annotations.json to a list of ImageMetadata."""
+
     with tf.gfile.FastGFile(annotations_file, "r") as f:
         json_data = json.load(f)
     print("Processing json annotation file.")
@@ -69,6 +73,8 @@ def _load_and_process_metadata(annotations_file):
 
 
 def _create_vocab(annotations):
+    """Create Vocabulary based on the annotations and store it into word_counts.txt."""
+
     print("Creating vocabulary.")
     counter = Counter(annotations)
     print("Total words:", len(counter))
@@ -95,6 +101,7 @@ def get_chunks(l, n):
         yield l[i:i + n]
 
 def _to_sequence_example(image, vocab):
+    """Create an Sequence Example proto for an image."""
 
     context = tf.train.Features(feature={
         "image/filename": _bytes_feature(image.filename),
@@ -118,6 +125,8 @@ def _to_sequence_example(image, vocab):
 
 
 def _process_dataset(name, dataset, vocab, chunk_size):
+    """Process one dataset to tf_records."""
+
     random.seed(14352)
     random.shuffle(dataset)
     rng = len(dataset)/chunk_size
@@ -139,6 +148,7 @@ def _process_dataset(name, dataset, vocab, chunk_size):
 
 
 def main(_):
+    
     if not tf.gfile.IsDirectory(OUTPUT_DIR):
         tf.gfile.MakeDirs(OUTPUT_DIR)
 
