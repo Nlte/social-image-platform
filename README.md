@@ -123,7 +123,7 @@ conda activate platform
 ```sh
 cd img_platform/
 pip install -r requirements.txt  # install the django+packages
-npm install -g bower  # install bower package manager
+sudo npm install -g bower  # install bower package manager
 npm install
 bower install
 python manage.py runserver --noreload
