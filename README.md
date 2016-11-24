@@ -38,7 +38,6 @@ NOTE : The dataset consists of 25000 images, annotations and metadata. It takes 
 First, download the dataset : 
 ```sh
 cd ml_core/data/
-# download images and annotations. Outputs "annotations.json" file
 ./download_dataset.sh
 ```
 Then, run the processing script :
@@ -56,7 +55,7 @@ To run the caching script :
 cd ..
 python cache_bottlenecks.py
 ```
-This script will run each image in the CNN once to extract the image embedding vector. Each vector in stored in the output directory as `name-of-the-image.jpg.txt` . 
+This script will run each image in the CNN once to extract the image embedding vector. Each vector in stored in the `ml_core/data/bottlenecks` directory as `name-of-the-image.jpg.txt` . 
 It takes arround 1h30 to process the 25000 images from the dataset.
 
 Once the caching is done, we can train the classifier :
