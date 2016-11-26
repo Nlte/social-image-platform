@@ -98,6 +98,7 @@ Below is an example of prediction
 - Matthieu Guillaumin, Thomas Mensink, Jakob Verbeek and Cordelia Schmid. TagProp: Discriminative Metric Learning in Nearest Neighbor Models for Image Auto-Annotation. In ICCV, 2009. [[link]](http://class.inrialpes.fr/pub/guillaumin-iccv09b.pdf)
 - Minmin Chen, Alice Zheng and Kilian Q. Weinberger. Fast Image Tagging. In JMLR, 2013. [[link]](http://www.jmlr.org/proceedings/papers/v28/chen13j.pdf)
 - Mark Everingham, Luc Van Gool, Christopher K. I. Williams, John Winn and Andrew Zisserman. The PASCAL Visual Object Classes (VOC) Challenge. In IJCV, 2010 [[link]](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.167.6629&rep=rep1&type=pdf)
+- Nitish Srivastava, Geoffrey Hinton, Alex Krizhevsky, Ilya Sutskever and Ruslan Salakhutdinov. Dropout: A Simple Way to Prevent Neural Networks from Overfitting. In JMLR, 2014. [[link]](https://www.cs.toronto.edu/~hinton/absps/JMLRdropout.pdf)
 - Diederik P. Kingma and Jimmy Lei Ba. Adam: a method for stochastic optimization. In ICLR, 2015. [[link]](https://arxiv.org/pdf/1412.6980v8.pdf)
 - Fei-Fei Li, Andrej Karpathy, Justin Johnson. Stanford Course CS231n: Convolutional Neural Networks for Visual Recognition.  [[Website]](http://cs231n.stanford.edu)
 - Sebastian Ruder. An overview of gradient descent optimization algorithms. [[Website]](http://sebastianruder.com/optimizing)
