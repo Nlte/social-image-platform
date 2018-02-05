@@ -1,0 +1,1 @@
+!function(){"use strict";function t(t){function e(e){return t["delete"]("/api/v1/accounts/"+e.id+"/")}function n(e){return t.get("/api/v1/accounts/"+e+"/")}function r(e){return t.put("/api/v1/accounts/"+e.username+"/",e)}var u={destroy:e,get:n,update:r};return u}angular.module("platform.profiles.services").factory("Profile",t),t.$inject=["$http"]}();

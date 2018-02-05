@@ -40,16 +40,16 @@ def main(_):
     model = MLClassifier(config, data, target)
     model.build()
 
-    merged = tf.merge_all_summaries()
+    merged = tf.summary.merge_all()
     saver = tf.train.Saver()
 
     sess = tf.Session()
 
-    sess.run(tf.initialize_all_variables())
-    sess.run(tf.initialize_local_variables())
+    sess.run(tf.global_variables_initializer())
+    sess.run(tf.local_variables_initializer())
 
-    train_writer = tf.train.SummaryWriter(LOG_DIR + '/train', sess.graph)
-    test_writer = tf.train.SummaryWriter(LOG_DIR + '/test')
+    train_writer = tf.summary.FileWriter(LOG_DIR + '/train', sess.graph)
+    test_writer = tf.summary.FileWriter(LOG_DIR + '/test')
 
     coord = tf.train.Coordinator()
     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
@@ -59,16 +59,17 @@ def main(_):
     num_batch_per_epoch = int((9 * 2056)/BATCH_SIZE)  # (nb shards * nb examples per shard) / batch size
     num_steps = NUM_EPOCH * num_batch_per_epoch
 
-    for n in xrange(num_steps):
+    for n in range(num_steps):
         images, annotations = sess.run([train_images, train_annotations])
         bottlenecks = inputs.get_bottlenecks(images, BOTTLENECK_DIR)
         fetches = {'opt':model.optimize, 'loss':model.loss, 'summary': merged}
         feed_dict = {data: bottlenecks, target: annotations}
         v = sess.run(fetches, feed_dict)
-        if n%50 == 0:
+        if n%10 == 0:
+            print('Loss: %f' % v['loss'])
             train_writer.add_summary(v['summary'], n)
 
-        if n%125 == 0:
+        if n%100 == 0:
             images, annotations = sess.run([val_images, val_annotations])
             bottlenecks = inputs.get_bottlenecks(images, BOTTLENECK_DIR)
             fetches = {'auc_ops': model.auc_op, 'summary': merged}

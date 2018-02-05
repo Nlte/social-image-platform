@@ -10,7 +10,7 @@ from MLmodel import MLClassifier
 
 BOTTLENECK_DIR = "data/bottlenecks"
 TFR_DIR = "data/output"
-TEST_FILE_PATTERN = "test-???-004.tfr"
+TEST_FILE_PATTERN = "test-???-003.tfr"
 
 
 BATCH_SIZE = 100
@@ -36,7 +36,7 @@ def main(_):
 
     sess = tf.Session()
 
-    sess.run(tf.initialize_local_variables())
+    sess.run(tf.local_variables_initializer())
     model.restore_fc(sess)
 
     coord = tf.train.Coordinator()
@@ -46,7 +46,7 @@ def main(_):
 
     num_steps = int((4 * 1028)/BATCH_SIZE) # (nb shards * nb examples per shard)
 
-    for n in xrange(num_steps):
+    for n in range(num_steps):
         images, annotations = sess.run([test_images, test_annotations])
         bottlenecks = inputs.get_bottlenecks(images, BOTTLENECK_DIR)
         fetches = {'auc_ops': model.auc_op}

@@ -43,8 +43,10 @@ def _int64_feature(value):
 
 def _bytes_feature(value):
     """Wrapper for inserting a bytes Feature into a SequenceExample proto."""
-    return tf.train.Feature(bytes_list=tf.train.BytesList(value=[str(value)]))
-
+    v = value
+    if isinstance(value, str):
+        v = bytes(value.encode('utf8'))
+    return tf.train.Feature(bytes_list=tf.train.BytesList(value=[v]))
 
 def _int64_feature_list(values):
     """Wrapper for inserting an int64 FeatureList into a SequenceExample proto."""
@@ -97,7 +99,7 @@ def _create_vocab(annotations):
 
 def get_chunks(l, n):
     """Yield successive n-sized chunks from l."""
-    for i in xrange(0, len(l), n):
+    for i in range(0, len(l), n):
         yield l[i:i + n]
 
 def _to_sequence_example(image, vocab):
@@ -148,7 +150,7 @@ def _process_dataset(name, dataset, vocab, chunk_size):
 
 
 def main(_):
-    
+
     if not tf.gfile.IsDirectory(OUTPUT_DIR):
         tf.gfile.MakeDirs(OUTPUT_DIR)
 

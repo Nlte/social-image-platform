@@ -18,8 +18,8 @@ def linear(x, name, size):
 
     W = tf.get_variable(name+"/W", [x.get_shape()[1], size])
     b = tf.get_variable(name+"/b", [size], initializer=tf.zeros_initializer)
-    tf.histogram_summary(name+"/W", W)
-    tf.histogram_summary(name+"/b", b)
+    tf.summary.histogram(name+"/W", W)
+    tf.summary.histogram(name+"/b", b)
 
     return tf.matmul(x, W) + b
 
@@ -68,7 +68,7 @@ class MLClassifier(object):
         cnn.maybe_download_and_extract(self.config.inception_dir)
         inception_output = cnn.inception_v3(self.images, trainable=self.config.train_inception)
         self.inception_variables = tf.get_collection(
-            tf.GraphKeys.VARIABLES, scope="InceptionV3")
+            tf.GraphKeys.GLOBAL_VARIABLES, scope="InceptionV3")
         self.bottleneck_tensor = inception_output
 
 
@@ -96,36 +96,36 @@ class MLClassifier(object):
             self.prediction = tf.round(self.activations)
 
             cross_entropy = tf.reduce_sum(
-                            tf.nn.sigmoid_cross_entropy_with_logits(net, self.annotations), 1)
+                            tf.nn.sigmoid_cross_entropy_with_logits(logits=net, labels=self.annotations), 1)
             self.loss = tf.reduce_mean(cross_entropy)
-            tf.scalar_summary("loss", self.loss)
+            tf.summary.scalar("loss", self.loss)
             self.optimize = tf.train.AdamOptimizer(self.config.learning_rate).minimize(self.loss)
 
-            self.fc_variables = tf.get_collection(tf.GraphKeys.VARIABLES, scope="fully_connected")
+            self.fc_variables = tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, scope="fully_connected")
 
 
     def build_metrics(self):
         """Build the tensors computing PR AUC."""
 
         with tf.name_scope("metrics"):
-            activation_rack = tf.unpack(tf.cast(self.activations, tf.float32), axis=1)
-            label_rack = tf.unpack(tf.cast(self.annotations, tf.float32), axis=1)
+            activation_rack = tf.unstack(tf.cast(self.activations, tf.float32), axis=1)
+            label_rack = tf.unstack(tf.cast(self.annotations, tf.float32), axis=1)
             auc = []
             auc_op = []
             i=0
             for activation, label in zip(activation_rack, label_rack):
-                value, op = tf.contrib.metrics.streaming_auc(activation, label, curve='PR')
+                value, op = tf.metrics.auc(label, activation, curve='PR')
                 auc_op.append(op)
                 auc.append(value)
+                tf.summary.scalar('auc-%d' % i, value)
                 i+=1
 
             mean_auc = tf.reduce_mean(auc)
-            tf.scalar_summary("mean_auc", mean_auc)
+            tf.summary.scalar("mean_auc", mean_auc)
 
         self.mean_auc = mean_auc
         self.auc_op = auc_op
         self.auc = auc
-
 
 
     def build(self):

@@ -1,0 +1,1 @@
+!function(){"use strict";function n(n,t,o){function i(){o.isAuthenticated()&&n.url("/")}function l(){o.login(c.email,c.password)}var c=this;c.login=l,i()}angular.module("platform.authentication.controllers").controller("LoginController",n),n.$inject=["$location","$scope","Authentication"]}();

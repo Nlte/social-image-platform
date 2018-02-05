@@ -10,8 +10,8 @@ from MLmodel import MLClassifier
 
 FLAGS = tf.app.flags.FLAGS
 
-IMAGE_DIR = "data/mirflickr"
-TFR_DIR = "data/output"
+IMAGE_DIR = "data/VOCdevkit/VOC2012/JPEGImages/"
+TFR_DIR = "data/output/"
 VAL_FILE_PATTERN = "val-???-001.tfr"
 BATCH_SIZE = 1
 
@@ -37,7 +37,7 @@ def main(_):
 
     sess = tf.Session()
 
-    sess.run(tf.initialize_local_variables())
+    sess.run(tf.local_variables_initializer())
     model.restore_fc(sess)
     model.restore_inception(sess)
 
@@ -46,10 +46,10 @@ def main(_):
 
     num_steps = int((1028)/BATCH_SIZE) # (1 shards * nb examples per shard)
 
-    for n in xrange(num_steps):
+    for n in range(num_steps):
         print("Running inference on image %d" % n)
         image, annotation = sess.run([test_images, test_annotations])
-        with open(os.path.join(IMAGE_DIR, image[0]), 'r') as f:
+        with open(os.path.join(IMAGE_DIR, image[0].decode('utf8')), 'rb') as f:
             image_data = f.read()
 
         fetches = {'auc_ops': model.auc_op}

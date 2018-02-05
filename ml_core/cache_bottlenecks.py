@@ -7,8 +7,8 @@ from MLmodel import MLClassifier
 from configuration import ModelConfig
 
 
-BOTTLENECK_DIR = "data/bottlenecks"
-IMAGE_DIR = "data/mirflickr"
+BOTTLENECK_DIR = "data/bottlenecks/"
+IMAGE_DIR = "data/mirflickr/"
 
 
 def cache_bottlenecks(bottleneck_dir, image_dir):
@@ -29,7 +29,7 @@ def cache_bottlenecks(bottleneck_dir, image_dir):
 
     sess = tf.Session()
 
-    sess.run(tf.initialize_all_variables())
+    sess.run(tf.global_variables_initializer())
     model.restore_inception(sess)
 
     # create list of images
@@ -48,7 +48,7 @@ def cache_bottlenecks(bottleneck_dir, image_dir):
 
         if not os.path.exists(bottleneck_path):
             image_path = os.path.join(image_dir, image)
-            with tf.gfile.GFile(image_path, "r") as f:
+            with tf.gfile.GFile(image_path, "rb") as f:
                 encoded_image = f.read()
             bottleneck_values = sess.run(model.bottleneck_tensor,
                 feed_dict={data: encoded_image})

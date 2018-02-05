@@ -1,0 +1,1 @@
+!function(){"use strict";function o(o){o.html5Mode(!0),o.hashPrefix("!")}angular.module("platform.config").config(o),o.$inject=["$locationProvider"]}();

@@ -1,0 +1,1 @@
+!function(){"use strict";function t(t,e,n){function o(){n.register(r.email,r.password,r.username)}var r=this;r.register=o}angular.module("platform.authentication.controllers").controller("RegisterController",t),t.$inject=["$location","$scope","Authentication"]}();

@@ -63,6 +63,7 @@ def get_bottlenecks(images, bottleneck_dir):
 
     bottlenecks = []
     for image in images:
+        image = image.decode('utf8')
         bottleneck_path = os.path.join(bottleneck_dir, image+'.txt')
         with open(bottleneck_path, 'r') as bottleneck_file:
             bottleneck_string = bottleneck_file.read()

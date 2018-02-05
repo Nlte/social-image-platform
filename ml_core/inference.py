@@ -30,8 +30,10 @@ def inference(filename):
     with open(filename, 'rb') as f:
         encoded_image = f.read()
     dummy_annot = np.zeros((1,len(model.vocabulary.vocab)))
-    image, preds = sess.run([model.images, model.prediction],
+    image, preds, activations = sess.run([model.images, model.prediction, model.activations],
                             {data: encoded_image, target: dummy_annot})
+    print(activations)
+    print(preds)
     idx = [i for i, x in enumerate(preds[0]) if x == 1]
     words = [config.vocabulary.id_to_word(x) for x in idx]
     print(words)
