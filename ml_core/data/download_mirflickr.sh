@@ -33,7 +33,3 @@ wget -nd -c "${BASE_URL}/${IMAGE}"
 echo "Unzipping ${IMAGE}"
 ${UNZIP} ${IMAGE}
 rm ${IMAGE}
-
-#Create output json
-echo "Running create_json_annotation.py script"
-python create_json_annotation.py

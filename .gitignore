@@ -1,11 +1,14 @@
-ml_core/data/annotation/
-ml_core/data/mirflickr/
-ml_core/models/model/
-ml_core/models/inception/
+env/
 *.pyc
 .DS_Store
 *.ipynb_checkpoints
 */migrations/
+*/__pycache__
+
+ml_core/data/annotation/
+ml_core/data/mirflickr/
+ml_core/models/model/
+ml_core/models/inception/
 ml_core/data/bottlenecks/
 ml_core/data/output/
 ml_core/data/*.json
@@ -15,3 +18,5 @@ img_platform/db.sqlite3
 img_platform/media/
 img_platform/static/bower_components/
 img_platform/node_modules/
+
+flask_platform/app/media/

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <form method="POST" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    <p>
+      <br>{{ form.title.label }}</br>
+      {{ form.title(size=64) }}
+    </p>
+    <p>
+      <br>{{ form.image.label }}</br>
+      {{ form.image }}
+    </p>
+    <p>{{ form.submit() }}</p>
+  </form>
+{% endblock %}

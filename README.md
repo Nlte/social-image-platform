@@ -24,9 +24,10 @@ This github repo is divided into 2 parts :
 
 ## Training the neural network
 Requirements
-- tensorflow (tested on 0.11)
+- tensorflow (tested on 1.5)
 - numpy
 - matplotlib
+- pandas
 
 ### Preprocess the data
 This project is based on the MIRFLICKR 25K dataset.
@@ -37,17 +38,20 @@ NOTE : The dataset consists of 25000 images, annotations and metadata. It takes 
 
 First, download the dataset :
 
-```
+```sh
 cd ml_core/data/
 ./download_dataset.sh
 ```
 It will create two directories in `data/`:
 
-```
-.
+```sh
 +-- data
 |   +-- annotation # annotation text files
 |   +-- mirflickr # images
+```
+Create the `annotations.json` file with :
+```sh
+python create_json_annotation.py
 ```
 Then, run the processing script :
 ```sh
@@ -60,7 +64,7 @@ Each record file consists of proto examples containing the image name and the la
 Training the full network end-to-end is computation intensive (one epoch takes arround 4h on a macbook pro with CPU only). Therefore in this project, we'll be only training the classifier that follows the CNN, there will be no fine-tuning of Inception.
 We need to extract and save the cnn feature of each image.
 To run the caching script :
-```
+```sh
 cd ..
 python cache_bottlenecks.py
 ```
@@ -69,25 +73,25 @@ It takes arround 1h30 to process the 25000 images from the dataset.
 
 Once the caching is done, we can train the classifier :
 
-```
+```sh
 python train.py
 ```
 This script builds a model according to the hyperparameters set in the class `ModelConfig` in `configuration.py`.
 During the training process, the loss values and the mean AUC can be monitored in tensorboard.
-```
+```sh
 # In a new terminal
 tensorboard --logdir=models/model
 ```
 The model is trained for 10 epochs, after that a checkpoint is created in `ml_core/models/model`.
 
 We can now proceed to the evaluation of our newly trained model :
-```
+```sh
 python evaluate.py --model_str="1hidden-1500"
 ```
 This script evaluates the model on the test dataset. The results are stored in `ml_core/results.csv` under the string passed as argument.
 
 It is also possible to run inference on an image with :
-```
+```sh
 python inference.py --image="../docs/lake.jpg"
 ```
 Below is an example of prediction
@@ -132,12 +136,12 @@ Requirements :
 - nodejs [[download-page]](https://nodejs.org/en/download/)
 
 It is preferable to create a virtual environment before proceeding to the installation of the website.
-```
+```sh
 virtualenv -p python3 ~/virtualenvs/img-platform/
 source ~/virtualenvs/img-platform/bin/activate
 ```
 To install the webserver
-```
+```sh
 cd img_platform/
 pip install -r requirements.txt  # install the django+packages
 sudo npm install -g bower  # install bower package manager
