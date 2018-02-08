@@ -10,6 +10,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
+    posts = db.relationship('Post', backref='author', lazy='dynamic')
 
     def set_password(self, pwd):
         self.password_hash = generate_password_hash(pwd)
@@ -30,7 +31,7 @@ class Post(db.Model):
     title = db.Column(db.String(80))
     image = db.Column(db.String(120))
     tags = db.Column(db.String)
-    createdAt = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    dateCreated = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     def __repr__(self):

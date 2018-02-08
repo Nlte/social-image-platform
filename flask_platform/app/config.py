@@ -7,4 +7,7 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     WTF_CSRF_CHECK_DEFAULT = False
     SECRET_KEY = 'abcd'
-    MEDIADIR = os.path.join(srcdir, 'media/')
+    SRCDIR = srcdir
+    STATICDIR = 'static'
+    MEDIADIR = 'media'
+    POST_PER_PAGE = 20

@@ -14,9 +14,6 @@ ml_core/data/output/
 ml_core/data/*.json
 ml_core/data/*.txt
 
-img_platform/db.sqlite3
-img_platform/media/
-img_platform/static/bower_components/
-img_platform/node_modules/
+img_platform/
 
 flask_platform/app/media/

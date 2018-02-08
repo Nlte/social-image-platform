@@ -1,15 +1,18 @@
 import os
 import pdb
-from flask import render_template, redirect, url_for, request, flash
+from flask import render_template, redirect, url_for, request, flash, send_from_directory
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.utils import secure_filename
+from jinja2 import Template
 from .utils import *
 
-from app import app, db
+from app import app, db, jinja_env
 from app.models import User, Post
 from app.forms import RegistrationForm, LoginForm, PostForm
 
-MEDIADIR = app.config['MEDIADIR']
+ABS_MEDIA_DIR = os.path.join(app.config['SRCDIR'], app.config['MEDIADIR'])
+if not os.path.isdir(ABS_MEDIA_DIR):
+    os.mkdir(ABS_MEDIA_DIR)
 
 @app.route('/ping')
 def ping():
@@ -18,9 +21,18 @@ def ping():
 @app.route('/')
 @app.route('/index')
 def index():
-    user = {'username': 'User'}
-    posts = [{'title':'A'}, {'title':'B'}]
-    return render_template('index.html', user=user, posts=posts)
+    page = request.args.get('page', 1, type=int)
+    posts = Post.query.order_by(Post.dateCreated.desc())
+    posts = posts.paginate(page, app.config['POST_PER_PAGE'], False)
+    next_page = None
+    prev_page = None
+    if posts.has_next:
+        next_page = url_for('index', page=posts.next_num)
+    if posts.has_prev:
+        prev_page = url_for('index', page=posts.prev_num)
+    return render_template('grid.html', posts=posts.items,
+        prev_page=prev_page, next_page=next_page)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -36,10 +48,12 @@ def login():
         return redirect(url_for('index'))
     return render_template('login.html', form=form)
 
+
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -56,30 +70,46 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
-@app.route('/timeline')
+
+@app.route('/timeline/<username>')
 @login_required
-def userposts():
-    return render_template('base.html', posts=post)
+def timeline(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    page = request.args.get('page', 1, type=int)
+    posts = user.posts.order_by(Post.dateCreated.desc())
+    posts = posts.paginate(page, app.config['POST_PER_PAGE'], False)
+    next_page = None
+    prev_page = None
+    if posts.has_next:
+        next_page = url_for('index', page=posts.next_num)
+    if posts.has_prev:
+        prev_page = url_for('timeline', page=posts.prev_num)
+    return render_template('grid.html', posts=posts.items,
+        prev_page=prev_page, next_page=next_page)
+
 
 @app.route('/newpost', methods=['GET', 'POST'])
 @login_required
 def newpost():
     form = PostForm()
     if form.validate_on_submit():
-        pdb.set_trace()
         f = form.image.data
         filename = secure_filename(f.filename)
         filename = str(gen_uuid()) + '.' + filename.split('.')[-1]
-        f.save(os.path.join(
-            MEDIADIR, filename
-        ))
+        abspath = os.path.join(ABS_MEDIA_DIR, filename)
+        f.save(abspath)
         #TODO call pred server
-        relpath = os.path.relpath(filename, start=MEDIADIR)
-        p = Post(title=form.title.data, image=relpath)
+        p = Post(title=form.title.data, image=filename, user_id=current_user.id)
         db.session.add(p)
         db.session.commit()
         return redirect(url_for('index'))
     return render_template('newpost.html', form=form)
+
+
+@app.route('/cdn/<path:filename>')
+def cdn_media(filename):
+    return send_from_directory(app.config['MEDIADIR'], filename)
+
 
 @app.route('/posts/<int:postId>')
 @login_required
