@@ -6,6 +6,7 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(srcdir, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     WTF_CSRF_CHECK_DEFAULT = False
+    FLASK_DEBUG = 1
     SECRET_KEY = 'abcd'
     SRCDIR = srcdir
     STATICDIR = 'static'

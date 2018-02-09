@@ -2,14 +2,31 @@
 
 {% block content %}
 
-<div class="row">
-{% for post in posts %}
-  <div class="col-md-4">
-      <h2 class="text-center">{{ post.title }}</h2>
-      <img src="{{ url_for('cdn_media', filename=post.image)}}" stlye="width:100%" height="250">
-      {{ post.annotation }}
+<div class="container gallery-container">
+
+  <h1>{{ title }}</h1>
+
+  <div class="tz-gallery">
+
+    <div class="row">
+
+      {% for post in posts %}
+        <div class="col-sm-6 col-md-4">
+            <div class="thumbnail">
+                <h3>+{{ post.author.username }}</h3>
+                <a class="lightbox" href="#">
+                    <img src="{{ url_for('cdn_media', filename=post.image)}}">
+                </a>
+                <div class="caption">
+                    <h2>{{ post.title }}</h2>
+                    <p>{{ post.annotation }}</p>
+                </div>
+            </div>
+        </div>
+      {% endfor %}
+
+    </div>
   </div>
-{% endfor %}
 </div>
 
 {% endblock %}

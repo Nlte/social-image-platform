@@ -5,7 +5,6 @@ flask-migrate
 flask-login
 flask-shell-ipython
 flask-wtf
-Flask-Scss
 wtforms
 tensorflow
 pandas

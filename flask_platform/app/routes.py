@@ -30,7 +30,7 @@ def index():
         next_page = url_for('index', page=posts.next_num)
     if posts.has_prev:
         prev_page = url_for('index', page=posts.prev_num)
-    return render_template('grid.html', posts=posts.items,
+    return render_template('grid.html', title='Public feed', posts=posts.items,
         prev_page=prev_page, next_page=next_page)
 
 
@@ -66,7 +66,6 @@ def register():
         db.session.add(user)
         db.session.commit()
         flash('User created')
-        #login_user(user)
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
 
@@ -84,7 +83,8 @@ def timeline(username):
         next_page = url_for('index', page=posts.next_num)
     if posts.has_prev:
         prev_page = url_for('timeline', page=posts.prev_num)
-    return render_template('grid.html', posts=posts.items,
+    title = "%s's timeline" % username
+    return render_template('grid.html', title=title, posts=posts.items,
         prev_page=prev_page, next_page=next_page)
 
 
