@@ -16,4 +16,4 @@ ml_core/data/*.txt
 
 img_platform/
 
-flask_platform/app/media/
+#flask_platform/app/media/

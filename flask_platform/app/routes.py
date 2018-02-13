@@ -1,5 +1,6 @@
 import os
 import pdb
+import requests
 from flask import render_template, redirect, url_for, request, flash, send_from_directory
 from flask_login import current_user, login_user, logout_user, login_required
 from werkzeug.utils import secure_filename
@@ -9,6 +10,8 @@ from .utils import *
 from app import app, db, jinja_env
 from app.models import User, Post
 from app.forms import RegistrationForm, LoginForm, PostForm
+
+URL_PREDSERVER = 'http://127.0.0.1:8080/predict'
 
 ABS_MEDIA_DIR = os.path.join(app.config['SRCDIR'], app.config['MEDIADIR'])
 if not os.path.isdir(ABS_MEDIA_DIR):
@@ -98,8 +101,14 @@ def newpost():
         filename = str(gen_uuid()) + '.' + filename.split('.')[-1]
         abspath = os.path.join(ABS_MEDIA_DIR, filename)
         f.save(abspath)
-        #TODO call pred server
-        p = Post(title=form.title.data, image=filename, user_id=current_user.id)
+        # call pred server
+        data = {'files':open(abspath, 'rb')}
+        resp = requests.post(URL_PREDSERVER, files=data)
+        labels = ''
+        if resp.content:
+            labels = resp.json()['labels']
+            labels = ' '.join(['#' + l for l in labels])
+        p = Post(title=form.title.data, image=filename, user_id=current_user.id, tags=labels)
         db.session.add(p)
         db.session.commit()
         return redirect(url_for('index'))

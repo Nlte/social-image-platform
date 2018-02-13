@@ -10,7 +10,7 @@ from MLmodel import MLClassifier
 
 BOTTLENECK_DIR = "data/bottlenecks"
 TFR_DIR = "data/output"
-TEST_FILE_PATTERN = "test-???-003.tfr"
+TEST_FILE_PATTERN = "test-???-004.tfr"
 
 
 BATCH_SIZE = 100

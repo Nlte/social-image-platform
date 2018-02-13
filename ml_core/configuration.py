@@ -61,7 +61,7 @@ class ServerConfig(object):
 
         self.model_checkpoint = path.join(dirname,"models/prod_model/model.ckpt")
 
-        self.vocab_file = path.join(dirname,"data/word_counts.txt")
+        self.vocab_file = path.join(dirname,"models/prod_model/word_counts.txt")
 
         ## model ##
         self.mode = "inference"

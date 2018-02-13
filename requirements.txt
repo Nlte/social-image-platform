@@ -3,9 +3,9 @@ flask_sqlalchemy
 sqlalchemy
 flask-migrate
 flask-login
-flask-shell-ipython
 flask-wtf
 wtforms
+requests
 tensorflow
 pandas
 matplotlib

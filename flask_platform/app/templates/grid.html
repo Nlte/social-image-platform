@@ -11,22 +11,28 @@
     <div class="row">
 
       {% for post in posts %}
-        <div class="col-sm-6 col-md-4">
-            <div class="thumbnail">
-                <h3>+{{ post.author.username }}</h3>
-                <a class="lightbox" href="#">
-                    <img src="{{ url_for('cdn_media', filename=post.image)}}">
-                </a>
+        <div class="col-sm-6 col-md-3">
+            <div class="thumbnail" height="400">
+                <a href="{{ url_for('timeline', username=post.author.username)}}"><h3>+{{ post.author.username }}</h3></a>
+                <div class="lightbox">
+                    <img class="img-responsive" src="{{ url_for('cdn_media', filename=post.image)}}" style="width:100%">
+                </div>
                 <div class="caption">
-                    <h2>{{ post.title }}</h2>
-                    <p>{{ post.annotation }}</p>
+                    <h3>{{ post.title }}</h3>
+                    <p>{{ post.tags }}</p>
                 </div>
             </div>
         </div>
+
       {% endfor %}
 
     </div>
   </div>
 </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.8.1/baguetteBox.min.js"></script>
+<script>
+    baguetteBox.run('.tz-gallery');
+</script>
 
 {% endblock %}

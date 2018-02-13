@@ -13,7 +13,7 @@ BOTTLENECK_DIR = "data/bottlenecks"
 TRAIN_FILE_PATTERN = "train-???-008.tfr"
 VAL_FILE_PATTERN = "val-???-001.tfr"
 
-NUM_EPOCH = 10
+NUM_EPOCH = 1
 BATCH_SIZE = 64
 
 

@@ -1,4 +1,5 @@
 import re
+import pdb
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from flask_wtf.file import FileField, FileRequired
@@ -13,7 +14,7 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Register')
 
     def validate_username(self, username):
-        if not re.match('^[\w\d]*$', username):
+        if not re.match('^[\w\d]*$', username.data):
             raise ValidationError('Only letters and numbers allowed')
         user = User.query.filter_by(username=username.data).first()
         if user is not None:

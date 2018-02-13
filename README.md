@@ -123,39 +123,31 @@ Below is an example of prediction
 
 <img src="https://raw.githubusercontent.com/Nlte/social-image-platform/master/docs/frontpage.png" />
 
-
-The website was built with the Django-Angular stack. There is no need to train a model before running the server. A pretrained model has already been saved in the repo.
-
-Requirements :
-- Django (tested on 1.10.2)
-- djangorestframework (tested on 3.5.0)
-- drf-nested-routers (tested on 0.11.1)
-- Pillow (tested on 5.0.0)
-- requests (test on 2.18.4)
-- tensorflow (tested on 1.5) [[installation guide]](https://www.tensorflow.org/versions/r0.11/get_started/os_setup.html)
-- nodejs [[download-page]](https://nodejs.org/en/download/)
+The website was built using Flask.
 
 It is preferable to create a virtual environment before proceeding to the installation of the website.
 ```sh
-virtualenv -p python3 ~/virtualenvs/img-platform/
-source ~/virtualenvs/img-platform/bin/activate
+# at the root of the repository
+virtualenv -p python3 env
+source env/bin/activate
 ```
-To install the webserver
+To install the requirements
 ```sh
-cd img_platform/
-pip install -r requirements.txt  # install the django+packages
-sudo npm install -g bower  # install bower package manager
-npm install
-bower install
+pip install -r requirements.txt
 ```
-To run the servers
+We can then start the two servers:
+- `predserver.py` located in ml_core, responsible for the tag prediction
+- `webserver.py` located in flask_platform, that runs the website
 ```sh
 # in one terminal run the prediction server
 cd ml_core/
-python server.py
+python predserver.py # the initialization can take a few seconds
 # in another terminal run the webserver
 cd img_platform/
-python manage.py runserver
+python webserver.py
 ```
 
-After the initialization of the tensorflow model and the django server are done. We can navigate to `127.0.0.1:8000` and play with the website.
+After the initialization of the tensorflow model and the flask server are done. We can navigate to `127.0.0.1:5000` and play with the website.
+The credentials for the default user are:
+- email: victorhugo@email.com
+- password: victor

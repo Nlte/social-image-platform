@@ -3,27 +3,27 @@
 {% block content %}
 
 <h1>Register</h1>
-  <form action="" method="POST">
+  <form action="" method="POST" class="form">
     {{ form.hidden_tag() }}
     <p>
       <br>{{ form.username.label }}</br>
       {{ form.username(size=32) }}
       {% for error in form.username.errors %}
-      <span style="color: red;">[{{ error }}]</span>
+      <span style="color: red;">{{ error }}</span>
       {% endfor %}
     </p>
     <p>
       <br>{{ form.email.label }}</br>
       {{ form.email(size=64) }}
       {% for error in form.email.errors %}
-      <span style="color: red;">[{{ error }}]</span>
+      <span style="color: red;">{{ error }}</span>
       {% endfor %}
     </p>
     <p>
       {{ form.password.label }}<br>
       {{ form.password(size=32) }}<br>
       {% for error in form.password.errors %}
-      <span style="color: red;">[{{ error }}]</span>
+      <span style="color: red;">{{ error }}</span>
       {% endfor %}
     </p>
     <p>{{ form.submit() }}</p>
