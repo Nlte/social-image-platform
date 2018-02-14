@@ -143,11 +143,8 @@ We can then start the two servers:
 cd ml_core/
 python predserver.py # the initialization can take a few seconds
 # in another terminal run the webserver
-cd img_platform/
+cd flask_platform/
 python webserver.py
 ```
 
 After the initialization of the tensorflow model and the flask server are done. We can navigate to `127.0.0.1:5000` and play with the website.
-The credentials for the default user are:
-- email: victorhugo@email.com
-- password: victor
