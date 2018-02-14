@@ -1,1 +1,0 @@
-!function(n,r){"use strict";function t(){function t(t,o){o=r.extend({timeout:3e3},o),o.content=t,n.snackbar(o)}function o(n,r){t("Error: "+n,r)}function c(n,r){t(n,r)}var e={error:o,show:c};return e}angular.module("platform.utils.services").factory("Snackbar",t)}($,_);
